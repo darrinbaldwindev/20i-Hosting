@@ -1,0 +1,49 @@
+# Secrets and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+credentials*
+secrets*
+private-key*
+recovery-codes*
+
+# Database and backup material
+*.sql
+*.sql.gz
+*.dump
+*.bak
+*.backup
+backups/
+restore-data/
+
+# Generated packages and artifacts
+artifacts/
+dist/
+build/
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+*.log
+*.tmp
+
+# Tooling and local state
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+node_modules/
+vendor/
+coverage/
+
+# Evidence may contain only reviewed, redacted records.
+evidence/raw/
+evidence/private/
+evidence/screenshots/
