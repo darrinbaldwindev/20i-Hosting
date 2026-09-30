@@ -1,7 +1,7 @@
 # Portfolio Global SOP Pointer
 
 Status: ACTIVE POINTER / NO AUTHORITY WIDENING  
-Canonical source: `darrinbaldwindev/Overseer/docs/overseer/CONTINUOUS-MAXED-BATCH-SOP.md`  
+Canonical source: `darrinbaldwindev/Overseer/docs/overseer/CONTINUOUS-MAXED-VERTICAL-SOP.md`  
 Blocker protocol: `darrinbaldwindev/Overseer/docs/overseer/GLOBAL-BLOCKER-ESCALATION-PROTOCOL.md`
 
 ## Execution rule
@@ -49,3 +49,8 @@ A local rule may not:
 - override physical-world or authenticated-account gates.
 
 This file is a pointer, not a duplicate SOP. If wording conflicts, the canonical Overseer SOP controls unless the local rule is stricter.
+
+
+## Legacy terminology
+
+Any repository-local reference to an “8-step batch”, “8-step SOP”, or equivalent former cycle wording is **SUPERSEDED** by the canonical Continuous Maxed Vertical Cycle SOP. Historical records may retain the old phrase only as historical evidence; they are not active execution authority.
