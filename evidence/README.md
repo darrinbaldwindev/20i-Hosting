@@ -36,3 +36,9 @@ notes: non-secret only
 ```
 
 Never overwrite a receipt. Correct an error with a new receipt referencing the superseded record. Hash retained raw evidence where practical. Any secret exposure requires stopping the batch and following the owner's incident process.
+
+## Target identity and retention
+
+A receipt must identify the target strongly enough to prevent cross-site or cross-environment reuse. `target_id` alone is insufficient when it could be ambiguous: retain the provider/account scope, workload/site name, environment, package/resource identity and exact source/artifact identifiers where applicable, all in non-secret form.
+
+Repository receipts are an append-only redacted index, not the raw evidence store. Raw provider responses, screenshots, backups, logs containing personal data, billing details or secrets stay in the owner's approved secure storage under its retention policy. Git should retain only the minimum non-secret references/hashes needed for audit and recovery correlation. If retention or deletion obligations conflict with a receipt, preserve the audit link without copying restricted/raw data into Git.
