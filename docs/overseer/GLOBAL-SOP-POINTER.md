@@ -1,3 +1,24 @@
+## Canonical CONT refresh — 2026-10-01
+
+On every `cont`, `continue`, `continue autonomously`, or `continue vertically`, freshly fetch and read the authoritative `darrinbaldwindev/Overseer/docs/overseer/CONTINUOUS-MAXED-VERTICAL-SOP.md` and mandatory `darrinbaldwindev/Overseer/docs/overseer/GLOBAL-BLOCKER-ESCALATION-PROTOCOL.md` before reading the local batch, profile, engine or handoff. Do not rely on chat memory, cached copies or the default branch to supply an unmerged update.
+
+Verified canonical SOP baseline: commit `92fc379e3784b6e3e23a2eec7441938d1a36efc7`, blob `0cccb2ede03f6a689a5bdadc84297f32b064a241`.
+Immutable source: https://github.com/darrinbaldwindev/Overseer/blob/92fc379e3784b6e3e23a2eec7441938d1a36efc7/docs/overseer/CONTINUOUS-MAXED-VERTICAL-SOP.md
+Resolve the current approved continuation of `audit/sop-document-control-reconcile-20260930` for the companion protocol and record the fetched head and both blobs. A newer SOP must preserve this baseline's owner-directed semantics unless the owner explicitly supersedes them. If the source cannot be fetched or identity cannot be reconciled, record the access/lineage blocker rather than silently executing a legacy SOP.
+
+The canonical SOP is authoritative. All local batch/profile/engine files and older 8-step/legacy doctrine are subordinate implementation or historical material; they cannot replace this SOP or widen authority. Stricter local safety and authority rules remain controlling boundaries.
+
+Execute the best available safe work first. Three cycles / six vertical batches is a maximum/default envelope, not a quota. Do not manufacture filler, repeat unchanged blocker status or make cosmetic edits to satisfy batch counts.
+
+The final controller must declare exactly one primary outcome:
+- **MORE WORK AVAILABLE ON PRIORITIES**
+- **MORE WORK AVAILABLE ON PORTFOLIO**
+- **NO WORK AVAILABLE**
+
+Record priority work, portfolio work, blockers/escalations, recheck evidence and exact resume conditions separately. The SOP's updated outcome labels supersede older labels in any companion or local file; blocker escalation/recheck duties remain mandatory.
+
+This durable instruction requires a fresh read on the next CONT. It is not evidence that existing open chats have already reloaded either source. It grants no merge, deploy, publication, spend, credential, production, scheduler, Green/PRS or physical-world authority.
+
 # Portfolio Global SOP Pointer
 
 Status: ACTIVE POINTER / NO AUTHORITY WIDENING  
@@ -30,10 +51,9 @@ If it cannot:
 ## End-of-envelope declaration
 
 The final controller must declare exactly one:
-- **MORE WORK — CONTINUE**
-- **MORE WORK — BLOCKED**
-- **NO MATERIAL WORK REMAINING**
-- **WAIT FOR CHANGE**
+- **MORE WORK AVAILABLE ON PRIORITIES**
+- **MORE WORK AVAILABLE ON PORTFOLIO**
+- **NO WORK AVAILABLE**
 
 It must state what remains, what is blocked, what was escalated, whether blockers were re-checked, and whether another 3-cycle envelope should start.
 
