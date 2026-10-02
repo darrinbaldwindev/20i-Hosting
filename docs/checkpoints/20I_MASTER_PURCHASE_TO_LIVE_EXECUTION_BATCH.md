@@ -455,7 +455,7 @@ Each workload receives its own staging acceptance and owner production gate. A p
 
 Architecture: one reusable `affiliate-master` lightweight WordPress block theme with three separate markets. They share framework and components, not market truth.
 
-Suggested rollout order after master validation: **AU → UK → US**, unless the owner changes it based on current commercial readiness.
+**No standing AU-first rollout order.** Current owner direction does not treat Australia as the default first market. After master validation, select the first market from fresh commercial/technical readiness and explicit owner direction; a US-first/default path is permitted. A pass for one market still does not authorise another.
 
 For each market create a separate package/site or explicitly isolated site configuration as admitted by inventory and quota. Verify independently:
 
