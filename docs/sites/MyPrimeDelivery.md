@@ -3,15 +3,25 @@
 ```yaml
 site: MyPrimeDelivery
 repository: MyPrimeDelivery
-branch: UNKNOWN
-source_commit_sha: e611db4c7426244c3e66f8e7be462e64cee4f921
-target_package_id: UNKNOWN
-package_type_id: UNKNOWN
-location_id: TBD
-artifact_sha256: UNKNOWN
+current_canonical_head: dfa202b8a6b99efc256fcd43bf3fa804b4bf24f6
+target_environment: staging
+deployable_wordpress_package: NOT_DEMONSTRATED
 ready_to_upload_20i: BLOCKED
 ```
 
-WordPress-oriented implementation exists, but explicit staging-package readiness is not evidenced. Preserve the fail-closed product/deal model: only `ACTIVE` evidence may emit sale or urgency fields; Prime status is independent; candidate and deal states must remain explicit; live data, marketplace, affiliate tags, rights, and outbound CTA/publication need separate approval.
+Current repository evidence contains governance, research, fixtures, staging-mission and compliance documentation, but no demonstrated project-owned deployable `wp-content` theme/plugin application package at the current canonical head.
 
-Next: declare package contents, PHP/WordPress requirements, bootstrap, environment placeholders, test fixtures, smoke tests, and tested rollback at the exact SHA.
+The current Amazon AU boundary is separate from 20i hosting readiness:
+
+- provider access does not imply field-use rights;
+- field-use rights do not imply affiliate/outbound authority;
+- affiliate/outbound authority does not imply publication authority;
+- publication authority does not imply deployment authority.
+
+Current 20i decision:
+
+- do **not** provision a new 20i target for MyPrimeDelivery;
+- wait for an installable WordPress artifact/package with an exact source identity, deterministic package hash, smoke tests and rollback/install notes;
+- then verify staging authority before provider mutation.
+
+Prior synthetic/disposable runtime evidence may remain supporting evidence, but it is not proof of a canonical deployable WordPress package.
