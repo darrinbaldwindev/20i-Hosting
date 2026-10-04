@@ -8,13 +8,25 @@ Blocker protocol: `darrinbaldwindev/Overseer/docs/overseer/GLOBAL-BLOCKER-ESCALA
 
 When the owner says `cont`, `continue`, `continue autonomously`, or `continue vertically`, use the canonical portfolio SOP unless this repository has a stricter local safety/authority rule.
 
-Default envelope:
-- 3 consecutive cycles;
-- 6 **maxed continued vertical batches** per cycle;
-- Step 7 consolidation;
-- Step 8 controller.
+Current canonical default:
+- resume from the exact prior controller checkpoint;
+- inspect only material deltas needed for the next executable action;
+- execute up to **12 substantive maxed vertical batches**;
+- 12 is a ceiling, not a quota;
+- use fewer batches when useful work is exhausted;
+- consolidate once;
+- run one controller pass;
+- continue automatically only while genuinely new safe work remains.
 
-Each maxed batch pushes one coherent vertical to its current safe boundary before moving on.
+Maintain the canonical mode-aware queue:
+- `CHAT_NOW`
+- `WORK_MODE`
+- `OWNER_ACTION`
+- `EXTERNAL_ACCOUNT`
+- `PHYSICAL`
+- `BLOCKED_STABLE`
+
+Execute known safe work before broad investigation. Do not perform a broad portfolio rescan by default.
 
 ## Blockers
 
@@ -23,19 +35,37 @@ If a blocker can be fixed safely here, fix it.
 If it cannot:
 - escalate it to the relevant Overseer;
 - record exact evidence and the unblock condition;
-- re-check it on the next CONT / next cycle;
-- do not count repeated unchanged blocker summaries as new progress;
-- pivot to distinct safe adjacent work when available.
+- classify an unchanged, already-routed blocker as `BLOCKED_STABLE`;
+- re-check only when its trigger fires;
+- do not count repeated blocker summaries as progress;
+- pivot to the next highest-value executable task.
+
+## Material-log rule
+
+Create durable controller/log updates only when:
+- state materially changes;
+- a new artifact exists;
+- a blocker changes;
+- priority order changes;
+- a reusable execution artifact is created.
+
+Repeated status documentation is not progress.
 
 ## End-of-envelope declaration
 
-The final controller must declare exactly one:
+The controller must declare exactly one:
 - **MORE WORK — CONTINUE**
 - **MORE WORK — BLOCKED**
 - **NO MATERIAL WORK REMAINING**
 - **WAIT FOR CHANGE**
 
-It must state what remains, what is blocked, what was escalated, whether blockers were re-checked, and whether another 3-cycle envelope should start.
+It must leave a concise checkpoint containing:
+- `P0`
+- `Next CHAT_NOW`
+- `Next WORK_MODE`
+- `OWNER_ACTION`
+- `BLOCKED_STABLE`
+- the completion phrase.
 
 ## Local rule precedence
 
@@ -50,7 +80,6 @@ A local rule may not:
 
 This file is a pointer, not a duplicate SOP. If wording conflicts, the canonical Overseer SOP controls unless the local rule is stricter.
 
-
 ## Legacy terminology
 
-Any repository-local reference to an “8-step batch”, “8-step SOP”, or equivalent former cycle wording is **SUPERSEDED** by the canonical Continuous Maxed Vertical Cycle SOP. Historical records may retain the old phrase only as historical evidence; they are not active execution authority.
+Any repository-local reference to an “8-step batch”, “8-step SOP”, 3×6 default envelope, or equivalent former cycle wording is **SUPERSEDED** for active execution by the current canonical checkpoint-driven SOP. Historical records may retain old wording only as evidence history.
