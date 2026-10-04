@@ -65,6 +65,8 @@ unknowns: []
 
 - Toolchain versions and lockfiles are pinned sufficiently to reproduce the artifact.
 - Build is tied to the exact SHA; artifact hash and manifest are recorded.
+- Immediately before staging upload, compare the artifact's declared upload-member sources with current canonical source. Any changed upload member makes the artifact `STALE_FOR_CURRENT_SOURCE` until rebuilt and reverified.
+- A historical checksum proves byte identity only; it does not prove current-source eligibility.
 - Production promotion reuses the verified artifact and does not rebuild a floating branch.
 
 ### 9. Backup and rollback
@@ -81,6 +83,7 @@ unknowns: []
 ### 11. Post-upload verification
 
 - Running release is verified by both artifact/deployment manifest and a read-only runtime version marker.
+- The receipt records the exact package source SHA and confirms the artifact was source-current immediately before mutation.
 - HTTPS, temporary hostname, no-index, mail suppression, asset loading, database state, scheduled tasks, logs, and critical journeys are checked.
 - Receipt records target provider ID, exact SHA, artifact hash, test results, charge (`0.00` or approved exact amount), and rollback readiness.
 
