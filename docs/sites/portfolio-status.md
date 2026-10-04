@@ -1,15 +1,22 @@
-# Initial portfolio status
+# 20i portfolio deployment status
 
-Status date: 2026-09-30. `UNKNOWN` means unverified and is blocking where required. Branch/SHA values below are preserved from current project context, not newly fetched from GitHub.
+Status date: 2026-10-04.
 
-| Workload | Repo / branch / exact SHA | Implementation | Package ready | Config/env | DB/bootstrap | Tests | Rollback | `READY_TO_UPLOAD_20I` | Blocker | Next action |
-|---|---|---|---|---|---|---|---|---|---|---|
-| GlobalShopCo | `GlobalShopCo` / `UNKNOWN` / `UNKNOWN` | Commerce/catalogue control repo present | N/A for canonical commerce | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | BLOCKED | Not a 20i WordPress deployment; Shopify remains authority | Record only the integration boundary; do not migrate commerce authority |
-| GlobalShopCo-Headless | `GlobalShopCo-Headless` / `work/headless-product-identity` / `18ec52cc7f62fd666f67ce20255555012b519308` | Present; practical 20i frontend path | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | BLOCKED | No evidenced 20i package/contract verification yet | Validate build/runtime/package needs at the recorded SHA |
-| Affiliate-Websites Master | `Affiliate-Websites` / `main` / `b5731903f7f7aa74b10ee6090b8d1e0903d305b3` | Present; strongest candidate, pre-upload readiness work exists | Reported readiness assets exist; exact package artifact unverified here | Fixtures/manifest reported; secrets and target env unverified | Fixtures reported; staging bootstrap unverified | Validator/smoke tests reported; results at SHA unverified here | Procedures reported; tested restore/rollback unverified | BLOCKED | Must execute this contract against exact SHA and target | Run contract verification and produce a redacted result |
-| Affiliate AU | `Affiliate-Websites` / `main` / `b5731903f7f7aa74b10ee6090b8d1e0903d305b3` | Market fixture reported | UNKNOWN | Market fixture reported; live approvals/config UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | BLOCKED | Market/current commercial evidence and target package unverified | Verify AU fixture, disclosures, approvals, and staging target |
-| Affiliate UK | `Affiliate-Websites` / `main` / `b5731903f7f7aa74b10ee6090b8d1e0903d305b3` | Market fixture reported | UNKNOWN | Market fixture reported; live approvals/config UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | BLOCKED | Fresh first-party/network referral evidence required | Verify UK claims, disclosures, approvals, and staging target |
-| Affiliate US | `Affiliate-Websites` / `main` / `b5731903f7f7aa74b10ee6090b8d1e0903d305b3` | Market fixture reported | UNKNOWN | Market fixture reported; live approvals/config UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | BLOCKED | Actual publisher/account approvals and target package unverified | Verify US network approvals, fixture, and staging target |
-| MyPrimeDelivery | `MyPrimeDelivery` / `UNKNOWN` / `e611db4c7426244c3e66f8e7be462e64cee4f921` | WordPress-oriented implementation present | Not explicitly staging-package ready | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | BLOCKED | Explicit 20i staging package/readiness evidence is missing | Build package declaration and run the contract at exact SHA |
+This public status file intentionally excludes private provider identifiers, account details, absolute server paths, credentials and private runtime receipts.
 
-No row authorizes upload, provisioning, production, DNS, credentials, purchase, billing, or launch.
+| Workload | Current repo state | Package/readiness state | 20i state | Current blocker / next action |
+|---|---|---|---|---|
+| GlobalShopCo | Shopify remains canonical commerce/catalogue authority | Not a canonical 20i WordPress deployment target | N/A | Preserve commerce boundary; do not migrate authority into WordPress |
+| GlobalShopCo-Headless | `work/headless-product-identity@19ea70e20436d9c544decaa42d390378992ed20a` | Plugin/theme exact-head CI verified; fail-closed regression verified | BLOCKED_FOR_COMMERCIAL_ACCEPTANCE | Canonical positive Storefront-visible publication approval signal is still undefined; isolated negative/fail-closed staging only |
+| Affiliate-Websites / RewardFinder | `main@96f8805d538f8fedd4ebed2ba98d44d66da031d7`; current support source `eeb05366347ab77a751f75565841294931354bd9` | 75-programme support package independently byte-bound and source-current | BLOCKED_ON_LIVE_UPLOAD_PATH_AND_RUNTIME_SMOKE | Verify staging upload path, capture rollback baseline, deploy exact payload, run canonical smoke, record receipt |
+| Affiliate AU | 26 verified programme records in current support payload | Current staging support bytes verified | STAGING EXECUTION PENDING | Live upload/config/smoke only; no production/commercial authority |
+| Affiliate UK | 26 verified programme records in current support payload | Package data current but no UK provider deployment admitted here | BLOCKED | Separate target/provider/authority verification required before upload |
+| Affiliate US | 23 verified programme records in current support payload | Package data current but no US provider deployment admitted here | BLOCKED | Separate target/provider/authority verification required before upload |
+| MyPrimeDelivery | `dfa202b8a6b99efc256fcd43bf3fa804b4bf24f6` | No demonstrated deployable project-owned WordPress package | BLOCKED | Produce deterministic installable theme/plugin package, tests, hash and rollback notes before 20i provisioning |
+
+## Global rules
+
+- `READY_TO_UPLOAD_20I` is admission, not deployment authority.
+- No row authorizes provisioning, production, DNS, credentials/security, purchases, billing, commercial activation or publication.
+- Stale artifact identities must never be substituted for current source.
+- Private provider evidence belongs in private coordination records, not this public repository.
