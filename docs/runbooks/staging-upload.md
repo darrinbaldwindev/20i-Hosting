@@ -15,3 +15,33 @@
 13. Stop on ambiguity, source drift, unexpected charge, target mismatch, failed recovery readiness, or any credential/security/DNS/production gate.
 
 This runbook does not authorize resource creation, production promotion, DNS changes, credential/security changes, purchases, billing changes or publication.
+
+
+## FTP/SFTP existing-authority ingress check
+
+When File Manager is unavailable, FTP/SFTP may be considered only as an **existing-authority** fallback.
+
+Before any connection attempt:
+
+1. inspect the package read-only for current FTP/SFTP lock state;
+2. confirm whether an existing package FTP identity/credential is already available without reset or creation;
+3. confirm the package's current 20i FTP/SFTP endpoint;
+4. confirm no unlock, password reset, new FTP account, Master FTP enablement, IP allow-list change, API-key creation, SSH-key creation, or other security/credential mutation is required.
+
+Allowed only when all of the above are already satisfied.
+
+If FTP/SFTP is locked, credentials are unavailable, or a credential/security change would be required:
+- classify `FTP_SFTP_INGRESS = BLOCKED_BY_AUTHORITY`;
+- do not unlock/reset/create;
+- return to the controller.
+
+Master FTP is not an automatic fallback because enabling it and adding an allowed IP are security-setting mutations.
+
+The 20i Reseller API is not an automatic fallback because API use requires an API credential and therefore cannot be introduced under a no-new-credentials boundary.
+
+When an existing-authority FTP/SFTP path is available:
+- recheck source-currentness;
+- verify rollback freshness;
+- upload exact independently verified bytes only;
+- do not expose credentials in logs/receipts;
+- run the same canonical smoke and receipt process as File Manager.
