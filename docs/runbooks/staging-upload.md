@@ -73,3 +73,34 @@ Hard stops:
 
 If the existing identity is absent or unusable without one of those changes:
 `STACKCP_EXISTING_IDENTITY_INGRESS = BLOCKED_BY_AUTHORITY`.
+
+
+## Existing assigned StackCP user -> Log in as User
+
+Preferred browser fallback before exposing any FTP password:
+
+1. manage the exact hosting package in My20i;
+2. inspect the existing **StackCP Users Assigned** section read-only;
+3. if a StackCP user is already assigned, use the existing **Log in as User** action;
+4. verify the resulting StackCP session is scoped to the exact target package;
+5. open StackCP File Manager;
+6. if functional, continue the normal exact-byte staging flow.
+
+This path is allowed only when the user assignment already exists.
+
+Do not:
+- create a StackCP user;
+- assign a new user;
+- change permissions;
+- change contact/security settings.
+
+If there is no existing assigned user, fall back to the existing FTP-identity compatibility login check without resetting/creating credentials.
+
+Preferred ingress order under the current authority:
+1. My20i File Manager if functional;
+2. existing assigned StackCP user -> Log in as User -> StackCP File Manager;
+3. existing FTP identity -> StackCP File Manager;
+4. existing unlocked FTP/SFTP with existing credentials;
+5. otherwise STOP.
+
+Git/API/Master FTP/new credential paths remain outside the current boundary.
