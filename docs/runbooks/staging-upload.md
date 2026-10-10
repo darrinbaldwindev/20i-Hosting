@@ -104,3 +104,30 @@ Preferred ingress order under the current authority:
 5. otherwise STOP.
 
 Git/API/Master FTP/new credential paths remain outside the current boundary.
+
+
+## Read-only package feature diagnostic
+
+Before treating a blank File Manager as a transport failure, distinguish:
+
+- UI/rendering failure;
+- File Manager feature disabled for StackCP on this package;
+- missing/incorrect StackCP user access;
+- file-ingress service unavailable.
+
+20i documents that StackCP feature visibility depends on package-level enabled features, while File Manager is normally a standard feature.
+
+Read-only diagnostic sequence:
+
+1. In My20i, locate the exact package.
+2. Open `Options -> Edit -> Edit Hosting Package` only far enough to inspect the current package-feature list.
+3. Record whether File Manager is currently enabled for the package.
+4. Do **not** toggle or save any package feature.
+5. Return without mutation.
+
+Interpretation:
+- File Manager enabled + My20i/StackCP File Manager blank => likely UI/session/service-path failure; continue existing assigned-user / existing FTP-identity fallback.
+- File Manager disabled => classify `FILE_MANAGER_FEATURE_DISABLED`; enabling it is a package configuration mutation and requires separate authority.
+- Feature state unreadable => retain `PROVIDER_FILE_INGRESS_UNKNOWN` and do not guess.
+
+This diagnostic does not authorize package-limit changes.
