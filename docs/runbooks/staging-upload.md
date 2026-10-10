@@ -45,3 +45,31 @@ When an existing-authority FTP/SFTP path is available:
 - upload exact independently verified bytes only;
 - do not expose credentials in logs/receipts;
 - run the same canonical smoke and receipt process as File Manager.
+
+
+## Existing FTP identity -> StackCP File Manager fallback
+
+20i documents a compatibility login path where each hosting package has a limited StackCP user that can authenticate using the website's existing FTP details.
+
+This is preferred over creating a new StackCP user when the current authority forbids new credentials.
+
+Allowed read-only discovery sequence:
+
+1. manage the exact hosting package in My20i;
+2. inspect the existing FTP Details section;
+3. determine whether the package's first FTP account already exists and whether its existing password is available without reset;
+4. do **not** record the password in logs, issues, screenshots intended for durable evidence, or receipts;
+5. use the existing FTP identity to attempt StackCP login only if no credential creation/reset is required;
+6. once inside StackCP, inspect whether File Manager is functional for the exact package;
+7. if functional, treat this as an existing-authority File Manager ingress path and continue the normal exact-byte staging flow.
+
+Hard stops:
+- no password reset;
+- no new FTP account;
+- no new StackCP user;
+- no permission expansion;
+- no Master FTP enablement;
+- no FTP unlock/IP allow-list mutation unless separately authorized.
+
+If the existing identity is absent or unusable without one of those changes:
+`STACKCP_EXISTING_IDENTITY_INGRESS = BLOCKED_BY_AUTHORITY`.
