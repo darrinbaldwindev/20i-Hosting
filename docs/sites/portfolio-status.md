@@ -12,7 +12,7 @@ This public status file intentionally excludes private provider identifiers, acc
 | Affiliate AU | 26 verified programme records in current support payload | Current staging bytes verified; rollback captured | PROVIDER INGRESS PENDING | Use File Manager if restored or existing-authority FTP/SFTP only; then upload/config/smoke—no production/commercial authority |
 | Affiliate UK | 26 verified programme records in current support payload | Package data current but no UK provider deployment admitted here | BLOCKED | Separate target/provider/authority verification required before upload |
 | Affiliate US | 23 verified programme records in current support payload | Package data current but no US provider deployment admitted here | BLOCKED | Separate target/provider/authority verification required before upload |
-| MyPrimeDelivery | `dfa202b8a6b99efc256fcd43bf3fa804b4bf24f6` | No demonstrated deployable project-owned WordPress package | BLOCKED | Produce deterministic installable theme/plugin package, tests, hash and rollback notes before 20i provisioning |
+| MyPrimeDelivery | default controller line now includes current SOP pointer; fixture/composition branches remain separate | M-03 v0.2.0 synthetic component PASS; 91 assertions PASS; 45 disposable WordPress runtime checks PASS; canonical adopted deployable package not demonstrated | BLOCKED_ON_CANONICAL_PACKAGE_ADOPTION | Select/adopt exact project-owned WordPress package, bind archive/hash/install/rollback evidence, then verify staging authority before 20i provisioning |
 
 ## Global rules
 
