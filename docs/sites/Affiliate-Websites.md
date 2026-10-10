@@ -5,7 +5,7 @@ site: Affiliate-Websites / RewardFinder
 markets: [AU, UK, US]
 repository: Affiliate-Websites
 branch: main
-current_repo_head: 960a65c5afa5433ec6137ad62513cb36a77b36ea
+current_repo_head: 256a64c519861258f0c44810380181127c66aa78
 current_support_source_head: eeb05366347ab77a751f75565841294931354bd9
 target_environment: staging
 package_state: VERIFIED_CURRENT_SUPPORT_BYTES
@@ -21,7 +21,7 @@ Current public-safe readiness state:
 - Theme source did not change during the latest catalogue/editorial tranche.
 - Current support package was independently byte-bound by the 20i Overseer against the exact package source.
 - The deterministic support package contains the staging MU-plugin, AU/US earning fixture, UK earning fixture, current editorial payload, pre-upload manifest and post-upload smoke checklist.
-- Current source after packaging changed controller/envelope/authority/current-state documentation plus a portfolio summary only; no deterministic support ZIP member changed.
+- Current source after packaging changed controller/envelope/authority/current-state documentation, a portfolio summary, and the global SOP pointer only; no deterministic support ZIP member changed.
 - Commercial routes remain fail-closed; editorial verification does not grant affiliate/outbound authority.
 - Provider target identity has been verified through private provider evidence, but provider-specific identifiers are intentionally not published in this repository.
 
@@ -60,3 +60,12 @@ A newly documented fallback is **existing-authority FTP/SFTP only**:
 - do not unlock FTP, reset/create passwords, create accounts, enable Master FTP, add IP allow rules, create API keys, or create SSH keys under the current boundary.
 
 If existing FTP/SFTP is unavailable without such changes, the provider-ingress blocker remains unchanged.
+
+
+## 2026-10-10 SOP-pointer head advance
+
+Affiliate `main` advanced from `960a65c5afa5433ec6137ad62513cb36a77b36ea` to `256a64c519861258f0c44810380181127c66aa78` solely through the global CONT SOP pointer repair.
+
+Exact compare: one changed file, `docs/overseer/GLOBAL-SOP-POINTER.md`.
+
+No theme/support upload member changed. Therefore the existing byte-bound theme/support identities remain current; package regeneration is not required.
