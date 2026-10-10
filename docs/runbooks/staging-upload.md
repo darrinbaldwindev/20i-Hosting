@@ -131,3 +131,28 @@ Interpretation:
 - Feature state unreadable => retain `PROVIDER_FILE_INGRESS_UNKNOWN` and do not guess.
 
 This diagnostic does not authorize package-limit changes.
+
+
+## Existing branded File Manager URL
+
+20i reseller accounts can define separate branded service URLs, including a direct File Manager URL.
+
+This is an allowed existing-authority fallback only when the URL is already configured.
+
+Read-only sequence:
+
+1. inspect current reseller branding/control-panel URL settings;
+2. determine whether a File Manager brand URL already exists;
+3. do not add/change DNS, SSL, brand URL, or reseller settings;
+4. if an existing File Manager URL is present, open it using the current authenticated/existing StackCP identity;
+5. verify it resolves to the exact package before any file action.
+
+If no existing File Manager brand URL exists, do not create one under the current authority.
+
+Preferred browser ingress order now:
+1. My20i File Manager;
+2. existing branded File Manager URL;
+3. existing assigned StackCP user -> Log in as User -> StackCP File Manager;
+4. existing FTP identity -> StackCP compatibility login -> File Manager;
+5. already-unlocked FTP/SFTP with existing credentials;
+6. STOP.
