@@ -1,6 +1,12 @@
 # `READY_TO_UPLOAD_20I` contract
 
-`READY_TO_UPLOAD_20I` is a release-admission result, not deployment authority. A site is `READY` only when every required item below is evidenced for one exact full commit SHA and intended staging target. Any unknown or failed required item makes the result `BLOCKED`.
+`READY_TO_UPLOAD_20I` is a release-admission result, not deployment authority. A site is `READY` only when the **pre-upload admission requirements in sections 1–10** are evidenced for one exact full commit SHA and intended staging target. Any unknown or failed pre-upload requirement makes the result `BLOCKED`. Section 11 is a separate **post-upload runtime acceptance** gate and cannot be a prerequisite to the first staging upload.
+
+## Gate ordering
+
+1. Before any staging mutation: evaluate sections 1–10 and record `READY` or `BLOCKED` for the exact source, artifact, target and verifier. `READY` is eligibility only; a separately authorized staging upload is still required.
+2. After that authorized upload: evaluate section 11 and record a separate `RUNTIME_ACCEPTED` or `RUNTIME_HOLD` receipt. Do not claim runtime acceptance from the pre-upload result.
+3. Missing section 11 evidence before first upload is **not** a pre-upload failure. Missing any section 1–10 requirement **is** a pre-upload failure.
 
 ## Required declaration
 
@@ -80,7 +86,7 @@ unknowns: []
 - Anonymous pages, admin/login where applicable, health endpoint, links/assets, forms with mail suppressed, redirects, accessibility baseline, logs, and representative workflows have executable checks.
 - Payment, conversion, affiliate, email, and production webhooks are disabled or use approved test/sandbox behavior.
 
-### 11. Post-upload verification
+### 11. Post-upload verification — separate runtime acceptance
 
 - Running release is verified by both artifact/deployment manifest and a read-only runtime version marker.
 - The receipt records the exact package source SHA and confirms the artifact was source-current immediately before mutation.
@@ -89,4 +95,4 @@ unknowns: []
 
 ## Decision rule
 
-`READY` means “eligible for a separately approved staging upload.” It never means authorized for provisioning, credential changes, DNS changes, production promotion, publication, billing, or launch.
+`READY` means “eligible for a separately approved staging upload,” not “uploaded” or “runtime accepted.” It never means authorized for provisioning, credential changes, DNS changes, production promotion, publication, billing, or launch. Section 11 must be independently verified after an authorized staging upload before reporting runtime acceptance.
