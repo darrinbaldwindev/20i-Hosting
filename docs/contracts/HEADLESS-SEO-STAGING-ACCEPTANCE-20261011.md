@@ -15,6 +15,12 @@ Applies to GlobalShopCo-Headless, Affiliate-Websites AU/UK/US and MyPrimeDeliver
 - Mail, payment, affiliate redirects, production webhooks and autonomous schedules suppressed in staging.
 - Backup/rollback proof and separately granted owner upload authority.
 
+## Separate public SEO and staging acceptance gates
+
+The Affiliate-Websites offline country-SEO fixture validator checks **intended public, indexable, self-canonical pages**. Its `indexable: true` contract is **not** a staging deployment acceptance criterion. A staging page must remain `noindex` even if the public SEO fixture validator passes for an equivalent route. Do not make staging indexable merely to satisfy that validator.
+
+Offline hostname syntax checks do not establish public DNS ownership, resolution safety, or provider identity. Before any authorized upload, separately verify the staging hostname against authenticated 20i provider evidence; after upload, verify actual HTTP robots/meta/header behavior and canonical/hreflang output. DNS resolution/rebinding, redirects and effective host ownership require runtime evidence. UNKNOWN is HOLD.
+
 ## Post-upload fail-closed checks
 
 1. Staging hostname serves intended site with HTTPS and correct source version marker.
