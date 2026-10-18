@@ -12,15 +12,15 @@ Branch:
 `work/headless-product-identity`
 
 Exact source:
-`9900055c338e69baaa7faa205a727cc69e3bcc0e`
+`2a5057cb52c799cc529d367e25cd7db25ed93876`
 
 Exact source tree:
-`c31f85bfb38921b3be9eade3dacdaa7d9ae8b3c5`
+`21dad6bf1fd573d9c92dee5528f552042e373c5c`
 
 Exact-head validation:
 - workflow: `M3 checkout validation`
-- run: `39097262279`
-- job: `117586186652`
+- run: `39107836737`
+- job: `117617427847`
 - conclusion: SUCCESS
 
 ## Deployment source roots
@@ -82,3 +82,12 @@ Still required:
 ## Authority boundary
 
 No merge, deployment, provider mutation, credential/security change, Shopify publication mutation, DNS/billing action, production write or product publication is authorized by this manifest.
+
+
+## Deployment-byte continuity
+
+The source head advanced from `9900055c...` to `2a5057cb...`, but exact comparison found zero `wp-content/` changes.
+
+Therefore the seven Git blobs and plugin/theme trees listed above remain the authoritative deployment source set for the current head.
+
+This continuity finding must be rechecked if PR #5 advances again.
