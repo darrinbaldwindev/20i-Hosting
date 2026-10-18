@@ -15,7 +15,7 @@ Branch:
 `seo-authority-hub-prototype-2026-10-18`
 
 Exact head:
-`fc66b2407914630d2dc2f67494aca0ba2477bb6e`
+`LIVE_LOOKUP_REQUIRED_BEFORE_PACKAGE_ADMISSION`
 
 Tree:
 `1208d9e046c8843a9afeda105a068955b188081d`
@@ -106,7 +106,7 @@ No publication mechanism is accepted merely because CI passes.
 
 ## 20i admission state
 
-`READY_TO_UPLOAD_20I = BLOCKED_ON_INNER_PACKAGE_BINDING_AND_ISOLATED_RUNTIME_AUTHORITY`
+`READY_TO_UPLOAD_20I = HOLD_HEAD_MOVING_AND_INNER_PACKAGE_UNBOUND`
 
 The separate provider-ingress problem previously observed in My20i may also apply once runtime execution is authorized.
 
@@ -168,3 +168,32 @@ Latest exact head adds a dedicated Article metadata PHP smoke step to CI.
 This is verification-only; no theme/runtime file changed in this latest commit.
 
 Current exact-head workflow passes the article metadata smoke in addition to the existing homepage-category and other source checks.
+
+
+## Active head-churn hold
+
+During CUB Chat Max ×96, PR #18 advanced repeatedly while evidence was being reconciled.
+
+Last observed live head:
+`f0ca924c660fa1209ab8f250650d4dc854bbf8cf`
+
+Current mergeability state at that observation:
+`clean`
+
+A recent successor changed real theme/runtime files, including:
+- `seo-authority-hub/wp-theme/front-page.php`;
+- `seo-authority-hub/wp-theme/functions.php`;
+- `seo-authority-hub/wp-theme/style.css`.
+
+Therefore no previously uploaded CI artifact or outer digest may be promoted as the current staging package merely by updating metadata.
+
+Clear this hold only when:
+1. a live exact head is fetched;
+2. the head remains stable long enough to bind source and CI;
+3. exact-head SEO Hub validation succeeds;
+4. the exact current CI artifact is retrieved;
+5. the inner installable ZIP is independently hashed and member-verified;
+6. isolated WordPress staging/runtime authority exists.
+
+Until then:
+`SEO_HUB_STAGING_PACKET = STALE_OR_UNBOUND`
