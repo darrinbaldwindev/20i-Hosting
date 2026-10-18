@@ -15,10 +15,10 @@ Branch:
 `seo-authority-hub-prototype-2026-10-18`
 
 Exact head:
-`633a6ec51f5e1a7b72f7be43ac268485b2827fd5`
+`67aff1bb46da8d74b5e95838c1a63050ae38dbba`
 
 Tree:
-`fbd299e96703e8fc0cd51439498f2e1316f45d0a`
+`3c5a519d93aaa465d0213c1a24573d01fc9ef86d`
 
 ## Exact-head CI
 
@@ -26,10 +26,10 @@ Workflow:
 `SEO Hub validation`
 
 Run:
-`39107644117`
+`39107688558`
 
 Job:
-`117616851485`
+`117616986020`
 
 Conclusion:
 `SUCCESS`
@@ -49,13 +49,13 @@ Artifact:
 `seo-hub-staging-candidate`
 
 Artifact ID:
-`12129455505`
+`12129226688`
 
 Outer artifact size:
 `8749 bytes`
 
 Outer artifact SHA-256:
-`42ca958924b50e7bf9c78ab20577fe1fab7a6de1a24c0e2c1aa0a414369122b1`
+`d7d20d8bc3a78dc1da09082ed17abc8a8bb532517702b17c02635009ae9c350c`
 
 Expiry:
 `2026-10-25`
@@ -146,5 +146,16 @@ Current exact head changes `seo-authority-hub/wp-theme/front-page.php` so catego
 This is a runtime-affecting theme change, so earlier exact-head artifacts were retired as stale.
 
 Current exact-head CI passes the updated theme.
+
+Independent inner ZIP binding and isolated WordPress runtime acceptance remain required.
+
+
+## 2026-10-18 Homepage category smoke
+
+Latest exact head adds a dedicated Homepage category PHP smoke step to CI.
+
+This is verification-only; the last runtime theme change remains the category-query error handling in `front-page.php`.
+
+Current exact-head workflow passes the new smoke.
 
 Independent inner ZIP binding and isolated WordPress runtime acceptance remain required.
