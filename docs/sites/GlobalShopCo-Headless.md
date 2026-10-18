@@ -5,12 +5,12 @@ site: GlobalShopCo-Headless
 role: 20i-hosted WordPress presentation path over Shopify authority
 repository: GlobalShopCo-Headless
 branch: work/headless-product-identity
-current_exact_head: 1bdfcc3ddf47b25f9ccb6a05ee5e439bdc06181f
+current_exact_head: 9900055c338e69baaa7faa205a727cc69e3bcc0e
 target_environment: isolated non-production staging only
-package_state: SOURCE_AND_EXACT_HEAD_CI_VERIFIED
+package_state: CURRENT_SOURCE_CI_VERIFIED__OLD_STAGING_PACKET_STALE
 publication_signal_governance: CLEARED
 runtime_acceptance: NOT_RUN
-ready_to_upload_20i: BLOCKED_ON_ISOLATED_RUNTIME_ACCEPTANCE
+ready_to_upload_20i: BLOCKED_ON_PROVIDER_INGRESS_AND_FRESH_RUNTIME_PACKET
 ```
 
 ## Exact current evidence
@@ -25,12 +25,12 @@ Canonical positive publication signal:
 - Headless/WordPress are readers only and may never mint approval.
 
 Current exact Headless target:
-`work/headless-product-identity@1bdfcc3ddf47b25f9ccb6a05ee5e439bdc06181f`
+`work/headless-product-identity@9900055c338e69baaa7faa205a727cc69e3bcc0e`
 
 Exact-head hosted verification:
 - workflow: `M3 checkout validation`
-- run `38014043056`
-- job `114100294050`
+- run `39097262279`
+- job `117586186652`
 - conclusion: SUCCESS
 
 The previously open publication-governance blocker is therefore superseded by the runtime gate.
@@ -73,3 +73,31 @@ This manifest does **not** authorize:
 - production writes.
 
 Repository CI verifies the contract only. Runtime acceptance remains unproven until the isolated staging smoke is executed and evidenced.
+
+
+## 2026-10-18 deployment-packet invalidation
+
+The previous isolated-runtime handoff was pinned to `1bdfcc3ddf47b25f9ccb6a05ee5e439bdc06181f`.
+
+Current PR #5 head is:
+`9900055c338e69baaa7faa205a727cc69e3bcc0e`
+
+Exact compare from the old target to the current head:
+- 97 commits ahead;
+- runtime plugin changed: `wp-content/plugins/globalshopco-headless/headless-context.php`;
+- test/workflow and presentation contracts also changed.
+
+Therefore the old `1bdfcc3...` staging/runtime packet must **not** be deployed or accepted as current.
+
+Current exact-head CI:
+- M3 checkout validation run `39097262279`;
+- job `117586186652`;
+- conclusion SUCCESS.
+
+Before any future 20i runtime upload:
+1. rebind the deployable WordPress payload to `9900055c...` or a newer exact approved head;
+2. hash/package the exact current deployment files;
+3. preserve the current provider-ingress/credential authority boundary;
+4. only then perform isolated runtime smoke.
+
+Provider ingress remains a separate blocker; this update does not authorize credentials, deployment, Shopify mutation or publication.
