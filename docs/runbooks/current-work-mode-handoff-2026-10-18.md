@@ -95,10 +95,9 @@ PR #5 branch:
 `work/headless-product-identity`
 
 Exact source:
-`9900055c338e69baaa7faa205a727cc69e3bcc0e`
+`LIVE LOOKUP REQUIRED BEFORE PACKAGE BUILD`
 
-Source tree:
-`c31f85bfb38921b3be9eade3dacdaa7d9ae8b3c5`
+Deployment-byte anchor remains the seven-file manifest only if live compare shows zero `wp-content/` drift.
 
 Hosted M3 validation:
 - run `39097262279`
@@ -156,7 +155,7 @@ Record exact runtime/deployment receipt and keep production untouched.
 Execute only after RewardFinder/commerce Headless work is blocked or complete and only with isolated staging authority.
 
 Exact source:
-`GlobalShopCo-Headless PR #18@67aff1bb46da8d74b5e95838c1a63050ae38dbba`
+`GlobalShopCo-Headless PR #18 — LIVE LOOKUP REQUIRED`
 
 Tree:
 `3c5a519d93aaa465d0213c1a24573d01fc9ef86d`
@@ -184,6 +183,16 @@ Before any 20i upload:
 8. preserve publication HOLD.
 
 Do not reuse commerce Headless package/runtime receipts for this lane.
+
+### SEO Hub head-churn gate
+
+PR #18 was actively changing runtime/theme and CI files during the current chat cycle.
+
+Do not upload any previously recorded SEO Hub artifact until:
+- live head is stable;
+- exact-head CI is green;
+- the exact current artifact is retrieved;
+- inner ZIP hash/members are independently verified.
 
 # Priority 4 — MyPrimeDelivery
 
