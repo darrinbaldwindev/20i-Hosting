@@ -5,7 +5,7 @@ site: GlobalShopCo-Headless
 role: 20i-hosted WordPress presentation path over Shopify authority
 repository: GlobalShopCo-Headless
 branch: work/headless-product-identity
-current_exact_head: 9900055c338e69baaa7faa205a727cc69e3bcc0e
+current_exact_head: 2a5057cb52c799cc529d367e25cd7db25ed93876
 target_environment: isolated non-production staging only
 package_state: CURRENT_SOURCE_CI_VERIFIED__OLD_STAGING_PACKET_STALE
 publication_signal_governance: CLEARED
@@ -25,12 +25,12 @@ Canonical positive publication signal:
 - Headless/WordPress are readers only and may never mint approval.
 
 Current exact Headless target:
-`work/headless-product-identity@9900055c338e69baaa7faa205a727cc69e3bcc0e`
+`work/headless-product-identity@2a5057cb52c799cc529d367e25cd7db25ed93876`
 
 Exact-head hosted verification:
 - workflow: `M3 checkout validation`
-- run `39097262279`
-- job `117586186652`
+- run `39107836737`
+- job `117617427847`
 - conclusion: SUCCESS
 
 The previously open publication-governance blocker is therefore superseded by the runtime gate.
@@ -80,7 +80,7 @@ Repository CI verifies the contract only. Runtime acceptance remains unproven un
 The previous isolated-runtime handoff was pinned to `1bdfcc3ddf47b25f9ccb6a05ee5e439bdc06181f`.
 
 Current PR #5 head is:
-`9900055c338e69baaa7faa205a727cc69e3bcc0e`
+`2a5057cb52c799cc529d367e25cd7db25ed93876`
 
 Exact compare from the old target to the current head:
 - 97 commits ahead;
@@ -90,8 +90,8 @@ Exact compare from the old target to the current head:
 Therefore the old `1bdfcc3...` staging/runtime packet must **not** be deployed or accepted as current.
 
 Current exact-head CI:
-- M3 checkout validation run `39097262279`;
-- job `117586186652`;
+- M3 checkout validation run `39107836737`;
+- job `117617427847`;
 - conclusion SUCCESS.
 
 Before any future 20i runtime upload:
@@ -101,3 +101,22 @@ Before any future 20i runtime upload:
 4. only then perform isolated runtime smoke.
 
 Provider ingress remains a separate blocker; this update does not authorize credentials, deployment, Shopify mutation or publication.
+
+
+## 2026-10-18 original-six docs-only head advance
+
+PR #5 advanced from `9900055c...` to `2a5057cb52c799cc529d367e25cd7db25ed93876`.
+
+Exact compare:
+- 7 commits ahead;
+- no `wp-content/` deployment file changed;
+- additions are original-six commercial/research/controller documents.
+
+The exact seven-file WordPress deployment payload remains byte-current.
+
+Current exact-head M3 validation:
+- run `39107836737`
+- job `117617427847`
+- SUCCESS.
+
+Do not regenerate the WordPress package solely because of these documentation-only commits. Commercial research evidence does not authorize publication or supplier/account activation.
