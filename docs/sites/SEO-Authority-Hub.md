@@ -15,10 +15,10 @@ Branch:
 `seo-authority-hub-prototype-2026-10-18`
 
 Exact head:
-`74d7c9fb7a59166602b44dd8219bc5f9b4aacdbe`
+`633a6ec51f5e1a7b72f7be43ac268485b2827fd5`
 
 Tree:
-`c70b1b58e0919a9a1520bbe9877ea80fc6b664a6`
+`fbd299e96703e8fc0cd51439498f2e1316f45d0a`
 
 ## Exact-head CI
 
@@ -26,10 +26,10 @@ Workflow:
 `SEO Hub validation`
 
 Run:
-`39107199321`
+`39107644117`
 
 Job:
-`117615534864`
+`117616851485`
 
 Conclusion:
 `SUCCESS`
@@ -49,13 +49,13 @@ Artifact:
 `seo-hub-staging-candidate`
 
 Artifact ID:
-`12128713743`
+`12129455505`
 
 Outer artifact size:
-`8728 bytes`
+`8749 bytes`
 
 Outer artifact SHA-256:
-`063ffcb05db3f8a40b06b809adda00c3ffa518ca1f0ad8f1be39d66bd06060a2`
+`42ca958924b50e7bf9c78ab20577fe1fab7a6de1a24c0e2c1aa0a414369122b1`
 
 Expiry:
 `2026-10-25`
@@ -137,3 +137,14 @@ Current exact head adds package-verifier negatives for:
 Exact-head CI passed both new protections.
 
 This improves package-admission assurance but does not replace independent inner archive retrieval/hash/member verification or WordPress runtime acceptance.
+
+
+## 2026-10-18 category-query error handling
+
+Current exact head changes `seo-authority-hub/wp-theme/front-page.php` so category rendering now checks `!is_wp_error($categories)` before iteration.
+
+This is a runtime-affecting theme change, so earlier exact-head artifacts were retired as stale.
+
+Current exact-head CI passes the updated theme.
+
+Independent inner ZIP binding and isolated WordPress runtime acceptance remain required.
