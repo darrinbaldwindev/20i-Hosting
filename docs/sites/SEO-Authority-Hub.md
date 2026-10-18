@@ -43,6 +43,10 @@ Verified CI steps:
 - staging candidate ZIP + manifest build;
 - artifact upload.
 
+### Historical packet warning
+
+Any exact run/job/artifact details below are historical observations only while `HOLD_HEAD_MOVING_AND_INNER_PACKAGE_UNBOUND` is active. They must be re-fetched after the branch stabilizes before staging admission.
+
 ## Current CI artifact
 
 Artifact:
