@@ -69,3 +69,22 @@ Affiliate `main` advanced from `960a65c5afa5433ec6137ad62513cb36a77b36ea` to `25
 Exact compare: one changed file, `docs/overseer/GLOBAL-SOP-POINTER.md`.
 
 No theme/support upload member changed. Therefore the existing byte-bound theme/support identities remain current; package regeneration is not required.
+
+
+## 2026-10-18 CUB x5 freshness checkpoint
+
+Fresh GitHub verification:
+- Affiliate `main` remains exactly `256a64c519861258f0c44810380181127c66aa78`;
+- compare from the previously verified current head to the live head is `identical`;
+- no theme/support member drift exists.
+
+Therefore:
+- support artifact `11290703976` remains source-current;
+- theme artifact `11258622460` remains source-current;
+- package regeneration is not justified.
+
+Provider ingress remains the live gate.
+
+The prior combined files+database backup from **2026-10-10 11:56:32 Australia/Brisbane** is retained as historical rollback evidence, but it must not be treated as a fresh pre-change snapshot indefinitely. If ingress clears on a later date, capture/re-verify a current pre-mutation rollback point immediately before upload/configuration unless provider evidence proves no staging mutation has occurred and the governing runbook explicitly accepts the older snapshot.
+
+No provider mutation occurred in this chat cycle.
