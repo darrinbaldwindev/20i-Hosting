@@ -151,7 +151,41 @@ Record exact runtime/deployment receipt and keep production untouched.
 
 ---
 
-# Priority 3 — MyPrimeDelivery
+# Priority 3 — SEO Authority Hub
+
+Execute only after RewardFinder/commerce Headless work is blocked or complete and only with isolated staging authority.
+
+Exact source:
+`GlobalShopCo-Headless PR #18@fad8f80272251f4be0e931e9090ea90afaad6d40`
+
+Tree:
+`601a3cfd31beb5e5363d3e61e5650e9a1f3c530f`
+
+Exact-head SEO Hub validation:
+- run `39106754544`
+- job `117614149845`
+- SUCCESS
+
+CI artifact:
+- name `seo-hub-staging-candidate`
+- ID `12129000923`
+- outer size `8728 bytes`
+- outer SHA-256 `422d550fb8599fce30022282ce5af8855f6561c1ed94c768d1bdb35630527eb1`
+- expires 2026-10-25
+
+Before any 20i upload:
+1. independently retrieve and hash the inner WordPress theme ZIP;
+2. verify the inner manifest and all members against exact source;
+3. confirm rejected/experimental publication-gate files are not inadvertently included;
+4. recheck exact source-currentness;
+5. establish fresh isolated rollback evidence;
+6. use isolated noindex WordPress staging only;
+7. run `seo-authority-hub/WORDPRESS-RUNTIME-ACCEPTANCE.md`;
+8. preserve publication HOLD.
+
+Do not reuse commerce Headless package/runtime receipts for this lane.
+
+# Priority 4 — MyPrimeDelivery
 
 Do not provision a new 20i target yet.
 
