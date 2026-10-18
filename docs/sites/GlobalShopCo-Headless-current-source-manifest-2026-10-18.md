@@ -1,0 +1,84 @@
+# GlobalShopCo Headless — Current WordPress Deployment Source Manifest
+
+Status: SOURCE-BOUND / PACKAGE NOT YET BUILT  
+Date: 2026-10-18
+
+## Exact source identity
+
+Repository:
+`darrinbaldwindev/GlobalShopCo-Headless`
+
+Branch:
+`work/headless-product-identity`
+
+Exact source:
+`9900055c338e69baaa7faa205a727cc69e3bcc0e`
+
+Exact source tree:
+`c31f85bfb38921b3be9eade3dacdaa7d9ae8b3c5`
+
+Exact-head validation:
+- workflow: `M3 checkout validation`
+- run: `39097262279`
+- job: `117586186652`
+- conclusion: SUCCESS
+
+## Deployment source roots
+
+Plugin tree:
+`wp-content/plugins/globalshopco-headless`
+Git tree:
+`d80a32f589ce145e4ebb20aea4fa9514ac40a7cf`
+
+Theme tree:
+`wp-content/themes/globalshopco-headless`
+Git tree:
+`c7c83fe4dd507857bb0da6d3fa72c1907020b44e`
+
+## Exact current file set
+
+| Path | Git blob | Bytes |
+|---|---|---:|
+| `wp-content/plugins/globalshopco-headless/README.md` | `ee3b33c9528891b18895d6f8069f6c144b6bc484` | 2,616 |
+| `wp-content/plugins/globalshopco-headless/globalshopco-headless.php` | `456f6683437dbd2a3f5d7736c89559556fbbdc1a` | 16,582 |
+| `wp-content/plugins/globalshopco-headless/headless-context.php` | `b011c5c6bd335734152f3ce8c507d2677679f3e2` | 6,994 |
+| `wp-content/themes/globalshopco-headless/front-page.php` | `9b9d2537c0930d782078cb3394b87ae9cfd9b64b` | 257 |
+| `wp-content/themes/globalshopco-headless/functions.php` | `87cb411867ae71354fae0f574cd4ca4ab45f3d29` | 705 |
+| `wp-content/themes/globalshopco-headless/index.php` | `8752c52e15ac831e0135ba45b3fbc7bd95e63190` | 1,971 |
+| `wp-content/themes/globalshopco-headless/style.css` | `7d7aeac9b2a0fcbcd03778e50b6bc07a66b45619` | 2,640 |
+
+Count:
+- 7 files
+- 31,765 raw source bytes
+
+## Packaging acceptance
+
+A future upload/package may be promoted only when all seven files:
+1. are fetched from this exact commit or a newer explicitly rebound source;
+2. reproduce the exact Git blob identities above;
+3. are placed only under the two declared WordPress roots;
+4. are packaged deterministically;
+5. receive an archive/package SHA-256;
+6. pass path-safety/content checks;
+7. preserve the plugin/theme directory layout;
+8. are source-current immediately before provider mutation.
+
+If any listed blob changes, this manifest is stale and must be regenerated.
+
+## Runtime acceptance boundary
+
+This source manifest is **not** a deployable artifact receipt.
+
+Still required:
+- deterministic package/archive build;
+- package SHA-256;
+- current-source recheck;
+- provider ingress;
+- pre-mutation rollback freshness;
+- isolated WordPress upload/activation;
+- canonical `docs/20I_POST_UPLOAD_SMOKE.md`;
+- redacted runtime/deployment receipt.
+
+## Authority boundary
+
+No merge, deployment, provider mutation, credential/security change, Shopify publication mutation, DNS/billing action, production write or product publication is authorized by this manifest.
