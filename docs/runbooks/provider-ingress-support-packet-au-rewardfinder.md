@@ -1,7 +1,7 @@
 # 20i Provider Ingress Support Packet — AU RewardFinder Staging
 
 Status: PREPARED_NOT_SUBMITTED  
-Date: 2026-10-10  
+Date: 2026-10-18  
 Purpose: concise provider-support evidence if owner later authorizes contacting 20i.
 
 ## Scope
@@ -11,22 +11,23 @@ Affected hosting package:
 - exact provider identifiers intentionally omitted from this public repository
 
 Current controller state:
-`BLOCKED_ON_PROVIDER_FILE_INGRESS_WITH_ROLLBACK_CAPTURED`
+`BLOCKED_ON_PROVIDER_EXISTING_IDENTITY_DIAGNOSTIC_REQUIRES_AUTHENTICATED_UI`
 
 ## What is already verified
 
 - My20i authentication works.
 - Target hosting package is active.
 - Affiliate source-currentness passed at:
-  `960a65c5afa5433ec6137ad62513cb36a77b36ea`
+  `256a64c519861258f0c44810380181127c66aa78`
 - Current approved support artifact:
   - artifact ID `11290703976`
   - inner ZIP SHA-256 `9fc95be766f85142a2aa5a9d33d8cb303abca4bdf68b1e87f6957d2094d71517`
 - Current approved theme artifact:
   - artifact ID `11258622460`
   - inner ZIP SHA-256 `e51bb5b8f4b594c821e3b7324bb8f66f67de1265734c5230665430178e4847ee`
-- Combined files + database rollback backup completed:
+- Historical combined files + database rollback backup completed:
   `2026-10-10 11:56:32 Australia/Brisbane`
+- This backup is retained as rollback evidence but is no longer assumed to be a fresh pre-mutation snapshot; refresh/reverify rollback immediately before any later upload/configuration.
 - No production resources were changed.
 
 ## Observed problem
@@ -39,7 +40,7 @@ Git deployment was not attempted because the visible path required establishing 
 
 ## Public provider status
 
-At the latest chat-mode check on 2026-10-10:
+At the documented chat-mode status check on 2026-10-10:
 - 20i/StackStatus reported all systems operational;
 - the earlier London connectivity incident from 2026-10-07 was marked resolved on 2026-10-08.
 
@@ -95,3 +96,16 @@ Support interaction clears this blocker only if it returns evidence that:
 - an already-existing no-new-credential ingress path is confirmed usable.
 
 Provider advice requiring a credential/security/package-setting mutation returns to owner/controller for separate authority.
+
+
+## 2026-10-18 freshness note
+
+Fresh repository verification found Affiliate `main` unchanged at `256a64c519861258f0c44810380181127c66aa78`.
+
+The support/theme artifacts above therefore remain source-current and should not be regenerated merely because time passed.
+
+Before any eventual provider mutation:
+1. recheck the exact Affiliate source;
+2. refresh/reverify a current rollback point;
+3. use only the exact approved bytes;
+4. do not treat the 2026-10-10 backup timestamp as sufficient current rollback evidence by itself.
