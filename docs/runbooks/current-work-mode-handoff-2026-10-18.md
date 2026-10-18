@@ -100,9 +100,8 @@ Exact source:
 Deployment-byte anchor remains the seven-file manifest only if live compare shows zero `wp-content/` drift.
 
 Hosted M3 validation:
-- run `39097262279`
-- job `117586186652`
-- SUCCESS.
+- exact live-head run/job: **RE-FETCH REQUIRED**
+- last observed compatible CI is evidence history only, not a substitute for current-head verification.
 
 The old `1bdfcc3...` runtime packet is **STALE_FOR_CURRENT_SOURCE** and must not be deployed.
 
@@ -161,16 +160,12 @@ Tree:
 `3c5a519d93aaa465d0213c1a24573d01fc9ef86d`
 
 Exact-head SEO Hub validation:
-- run `39107688558`
-- job `117616986020`
-- SUCCESS
+- **RE-FETCH REQUIRED AFTER HEAD STABILIZES**
+- do not use a historical run/job as current acceptance while PR #18 is moving
 
 CI artifact:
-- name `seo-hub-staging-candidate`
-- ID `12129226688`
-- outer size `8749 bytes`
-- outer SHA-256 `d7d20d8bc3a78dc1da09082ed17abc8a8bb532517702b17c02635009ae9c350c`
-- expires 2026-10-25
+- exact current artifact: **RE-FETCH REQUIRED AFTER HEAD STABILIZES**
+- historical outer artifact digests are non-transferable across head changes
 
 Before any 20i upload:
 1. independently retrieve and hash the inner WordPress theme ZIP;
