@@ -15,10 +15,10 @@ Branch:
 `seo-authority-hub-prototype-2026-10-18`
 
 Exact head:
-`fad8f80272251f4be0e931e9090ea90afaad6d40`
+`74d7c9fb7a59166602b44dd8219bc5f9b4aacdbe`
 
 Tree:
-`601a3cfd31beb5e5363d3e61e5650e9a1f3c530f`
+`c70b1b58e0919a9a1520bbe9877ea80fc6b664a6`
 
 ## Exact-head CI
 
@@ -26,10 +26,10 @@ Workflow:
 `SEO Hub validation`
 
 Run:
-`39106754544`
+`39107199321`
 
 Job:
-`117614149845`
+`117615534864`
 
 Conclusion:
 `SUCCESS`
@@ -49,13 +49,13 @@ Artifact:
 `seo-hub-staging-candidate`
 
 Artifact ID:
-`12129000923`
+`12128713743`
 
 Outer artifact size:
 `8728 bytes`
 
 Outer artifact SHA-256:
-`422d550fb8599fce30022282ce5af8855f6561c1ed94c768d1bdb35630527eb1`
+`063ffcb05db3f8a40b06b809adda00c3ffa518ca1f0ad8f1be39d66bd06060a2`
 
 Expiry:
 `2026-10-25`
@@ -126,3 +126,14 @@ No:
 - WordPress production activation.
 
 This manifest is staging-preparation evidence only.
+
+
+## 2026-10-18 ZIP metadata hardening
+
+Current exact head adds package-verifier negatives for:
+- non-regular/symlink ZIP members with otherwise matching receipt/digest;
+- unexpected ZIP compression metadata with otherwise matching receipt/digest.
+
+Exact-head CI passed both new protections.
+
+This improves package-admission assurance but does not replace independent inner archive retrieval/hash/member verification or WordPress runtime acceptance.
