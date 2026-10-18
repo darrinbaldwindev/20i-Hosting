@@ -15,10 +15,10 @@ Branch:
 `seo-authority-hub-prototype-2026-10-18`
 
 Exact head:
-`67aff1bb46da8d74b5e95838c1a63050ae38dbba`
+`fc66b2407914630d2dc2f67494aca0ba2477bb6e`
 
 Tree:
-`3c5a519d93aaa465d0213c1a24573d01fc9ef86d`
+`1208d9e046c8843a9afeda105a068955b188081d`
 
 ## Exact-head CI
 
@@ -26,10 +26,10 @@ Workflow:
 `SEO Hub validation`
 
 Run:
-`39107688558`
+`39107837987`
 
 Job:
-`117616986020`
+`117617431683`
 
 Conclusion:
 `SUCCESS`
@@ -49,13 +49,13 @@ Artifact:
 `seo-hub-staging-candidate`
 
 Artifact ID:
-`12129226688`
+`12129276677`
 
 Outer artifact size:
-`8749 bytes`
+`8818 bytes`
 
 Outer artifact SHA-256:
-`d7d20d8bc3a78dc1da09082ed17abc8a8bb532517702b17c02635009ae9c350c`
+`841cf6d98674a7dbf356b80e242941f632b87c7e127930d6db8cf04a177fd030`
 
 Expiry:
 `2026-10-25`
@@ -159,3 +159,12 @@ This is verification-only; the last runtime theme change remains the category-qu
 Current exact-head workflow passes the new smoke.
 
 Independent inner ZIP binding and isolated WordPress runtime acceptance remain required.
+
+
+## 2026-10-18 Article metadata smoke
+
+Latest exact head adds a dedicated Article metadata PHP smoke step to CI.
+
+This is verification-only; no theme/runtime file changed in this latest commit.
+
+Current exact-head workflow passes the article metadata smoke in addition to the existing homepage-category and other source checks.
