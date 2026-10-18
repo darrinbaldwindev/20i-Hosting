@@ -156,21 +156,21 @@ Record exact runtime/deployment receipt and keep production untouched.
 Execute only after RewardFinder/commerce Headless work is blocked or complete and only with isolated staging authority.
 
 Exact source:
-`GlobalShopCo-Headless PR #18@633a6ec51f5e1a7b72f7be43ac268485b2827fd5`
+`GlobalShopCo-Headless PR #18@67aff1bb46da8d74b5e95838c1a63050ae38dbba`
 
 Tree:
-`fbd299e96703e8fc0cd51439498f2e1316f45d0a`
+`3c5a519d93aaa465d0213c1a24573d01fc9ef86d`
 
 Exact-head SEO Hub validation:
-- run `39107644117`
-- job `117616851485`
+- run `39107688558`
+- job `117616986020`
 - SUCCESS
 
 CI artifact:
 - name `seo-hub-staging-candidate`
-- ID `12129455505`
+- ID `12129226688`
 - outer size `8749 bytes`
-- outer SHA-256 `42ca958924b50e7bf9c78ab20577fe1fab7a6de1a24c0e2c1aa0a414369122b1`
+- outer SHA-256 `d7d20d8bc3a78dc1da09082ed17abc8a8bb532517702b17c02635009ae9c350c`
 - expires 2026-10-25
 
 Before any 20i upload:
