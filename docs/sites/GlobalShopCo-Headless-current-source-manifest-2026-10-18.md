@@ -91,3 +91,17 @@ The source head advanced from `9900055c...` to `2a5057cb...`, but exact comparis
 Therefore the seven Git blobs and plugin/theme trees listed above remain the authoritative deployment source set for the current head.
 
 This continuity finding must be rechecked if PR #5 advances again.
+
+
+## Moving-head rule
+
+This manifest binds the seven WordPress deployment blobs, not arbitrary documentation commits on the branch.
+
+Before any package build/upload:
+1. fetch the live `work/headless-product-identity` head;
+2. compare from the manifest-bound deployment source to the live head;
+3. require zero `wp-content/` changes;
+4. verify all seven listed Git blobs still match;
+5. only then reuse this payload identity.
+
+Any deployment-file drift invalidates this manifest immediately.
