@@ -21,3 +21,11 @@ This public status file intentionally excludes private provider identifiers, acc
 - No row authorizes provisioning, production, DNS, credentials/security, purchases, billing, commercial activation or publication.
 - Stale artifact identities must never be substituted for current source.
 - Private provider evidence belongs in private coordination records, not this public repository.
+
+
+## Latest observations (non-authoritative head history)
+
+- Commerce Headless: `507349f...` observed with zero deployment-file drift from the current seven-file anchor and M3 run `39109316335` SUCCESS.
+- SEO Authority Hub: `f0a90b8...` observed with SEO validation run `39109456804` SUCCESS and artifact `12129274567`; branch remained active and staging hold remains.
+
+These observations never replace the live-head checks in the Work handoff.
