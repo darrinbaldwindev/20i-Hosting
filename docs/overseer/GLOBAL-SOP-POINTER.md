@@ -1,95 +1,33 @@
 # Portfolio Global SOP Pointer
 
-Status: ACTIVE POINTER / NO AUTHORITY WIDENING  
-Canonical source: `darrinbaldwindev/Overseer/docs/overseer/CONTINUOUS-MAXED-VERTICAL-SOP.md`  
-Blocker protocol: `darrinbaldwindev/Overseer/docs/overseer/GLOBAL-BLOCKER-ESCALATION-PROTOCOL.md`
+**Status:** ACTIVE POINTER / NO AUTHORITY WIDENING
+
+Canonical execution authority:
+- `darrinbaldwindev/Overseer/docs/overseer/CONTINUOUS-MAXED-VERTICAL-SOP.md`
+
+Mandatory blocker companion:
+- `darrinbaldwindev/Overseer/docs/overseer/GLOBAL-BLOCKER-ESCALATION-PROTOCOL.md`
+
+Control-stack ownership index:
+- `darrinbaldwindev/Overseer/docs/overseer/SOP-CONTROL-STACK.md`
 
 ## Execution rule
 
-When the owner says `cont`, `continue`, `continue autonomously`, or `continue vertically`, use the canonical portfolio SOP unless this repository has a stricter local safety/authority rule.
+On every owner CONT trigger, fresh-read the canonical Overseer SOP and blocker protocol before trusting local batch/controller wording.
 
-Canonical default:
-- resume from the exact prior controller checkpoint;
-- inspect only material deltas needed for the next executable action;
-- execute up to **12 substantive maxed vertical batches**;
-- 12 is a ceiling, not a quota;
-- use fewer when useful work is exhausted;
-- consolidate once;
-- run one controller pass;
-- continue automatically only while genuinely new safe work remains.
+This repository pointer intentionally does **not** copy:
+- current envelope size;
+- current selected super-cycle size;
+- controller outcome phrases;
+- global continuation/stop rules;
+- global blocker semantics.
 
-## Current owner-selected extended envelope
-
-Owner direction recorded on 2026-10-10 selects a **Portfolio Maximum Super Cycle** for subsequent CONT commands:
-
-- up to **48 distinct substantive vertical execution batches**;
-- Batch 49 — Consolidation;
-- Batch 50 — Controller;
-- Batch 51 — Handoff;
-- Batch 52 — Final checkpoint.
-
-This is an explicit extended envelope, not a replacement for the canonical 12-batch default.
-
-Use fewer than 48 when useful authorised work is exhausted. Do not pad, repeat stable blockers, or invent batch completions.
-
-Any later increase above 48 requires explicit owner selection.
-
-## Mode-aware queue
-
-Maintain:
-- `CHAT_NOW`
-- `WORK_MODE`
-- `OWNER_ACTION`
-- `EXTERNAL_ACCOUNT`
-- `PHYSICAL`
-- `BLOCKED_STABLE`
-
-Execute known safe work before broad investigation.
-
-## Blockers
-
-If a blocker can be fixed safely here, fix it.
-
-If it cannot:
-- escalate it to the narrowest relevant Overseer;
-- record exact evidence and unblock condition;
-- classify unchanged routed blockers as `BLOCKED_STABLE`;
-- re-check only when their trigger fires;
-- do not count repeated blocker summaries as progress;
-- fall through to the next highest-value executable task.
-
-## Material-log rule
-
-Create durable controller/log updates only when:
-- state materially changes;
-- a new artifact exists;
-- a blocker changes;
-- priority order changes;
-- a reusable execution artifact is created.
-
-Repeated status documentation is not progress.
-
-## End-of-envelope declaration
-
-The controller must declare exactly one:
-- **MORE WORK — CONTINUE**
-- **MORE WORK — BLOCKED**
-- **NO MATERIAL WORK REMAINING**
-- **WAIT FOR CHANGE**
+Those values belong only in the canonical Overseer control stack and may change without requiring a project-local doctrine rewrite.
 
 ## Local rule precedence
 
-A stricter repository-specific rule may narrow execution.
+A repository-local rule may be stricter for safety, evidence, compliance, or authority. It may not widen authority or weaken the canonical portfolio rules.
 
-A local rule may not:
-- weaken governance/evidence requirements;
-- bypass owner approval;
-- authorize merge/deploy/publication/spend/credentials/production writes;
-- fabricate Green/PRS/assurance/authentication/consent/commercial evidence;
-- override physical-world or authenticated-account gates.
+Historical batches, controllers, reports, and old cycle records may retain older wording as evidence. They are not current execution authority.
 
-This file is a pointer, not a duplicate SOP. If wording conflicts, the canonical Overseer SOP controls unless the local rule is stricter.
-
-## Legacy terminology
-
-Any repository-local reference to an “8-step batch”, “8-step SOP”, `3×6` default envelope, or equivalent former cycle wording is **SUPERSEDED** for active execution. Historical records may retain old wording only as evidence history.
+No merge, deploy, publication, spend, credential/security mutation, production write, Green promotion, PRS promotion, or physical-world action is authorized by this pointer.
