@@ -5,7 +5,7 @@ site: GlobalShopCo-Headless
 role: 20i-hosted WordPress presentation path over Shopify authority
 repository: GlobalShopCo-Headless
 branch: work/headless-product-identity
-current_exact_head: 2a5057cb52c799cc529d367e25cd7db25ed93876
+current_exact_head: LIVE_LOOKUP_REQUIRED_BEFORE_MUTATION
 target_environment: isolated non-production staging only
 package_state: CURRENT_SOURCE_CI_VERIFIED__OLD_STAGING_PACKET_STALE
 publication_signal_governance: CLEARED
@@ -24,8 +24,10 @@ Canonical positive publication signal:
 - blocking tags override a positive signal
 - Headless/WordPress are readers only and may never mint approval.
 
-Current exact Headless target:
-`work/headless-product-identity@2a5057cb52c799cc529d367e25cd7db25ed93876`
+Current Headless branch:
+`work/headless-product-identity`
+
+Live branch head is moving during active research/controller cycles. Fetch it immediately before any package or provider mutation.
 
 Exact-head hosted verification:
 - workflow: `M3 checkout validation`
@@ -120,3 +122,23 @@ Current exact-head M3 validation:
 - SUCCESS.
 
 Do not regenerate the WordPress package solely because of these documentation-only commits. Commercial research evidence does not authorize publication or supplier/account activation.
+
+
+## Live-head / deployment-byte policy
+
+The commerce branch is actively receiving documentation/research commits.
+
+Last observed live head during CUB ×96:
+`54476237a27319d339de5787c6c5fe604331dcdb`
+
+The previously bound seven-file WordPress payload remains admissible **only if** an immediate pre-mutation compare from its bound deployment source shows zero `wp-content/` changes and all seven Git blobs still match the source manifest.
+
+Do not continuously rewrite package identity for documentation-only head churn.
+
+If any `wp-content/` blob changes:
+- mark the package stale;
+- regenerate the deployment source manifest;
+- rebuild/hash the package;
+- rerun exact-head CI as required.
+
+This policy separates moving repository head from stable deployable bytes without weakening source-currentness.
