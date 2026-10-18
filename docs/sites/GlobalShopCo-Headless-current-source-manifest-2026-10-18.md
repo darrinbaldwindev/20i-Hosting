@@ -3,7 +3,7 @@
 Status: SOURCE-BOUND / PACKAGE NOT YET BUILT  
 Date: 2026-10-18
 
-## Exact source identity
+## Deployment-byte anchor identity
 
 Repository:
 `darrinbaldwindev/GlobalShopCo-Headless`
@@ -11,13 +11,15 @@ Repository:
 Branch:
 `work/headless-product-identity`
 
-Exact source:
+Deployment-byte anchor source:
 `2a5057cb52c799cc529d367e25cd7db25ed93876`
 
-Exact source tree:
+Deployment-byte anchor tree:
 `21dad6bf1fd573d9c92dee5528f552042e373c5c`
 
-Exact-head validation:
+This is not a promise that the branch head is still at the anchor SHA; the moving-head rule below controls current eligibility.
+
+Anchor-head validation:
 - workflow: `M3 checkout validation`
 - run: `39107836737`
 - job: `117617427847`
