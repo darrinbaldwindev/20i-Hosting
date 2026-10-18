@@ -142,3 +142,25 @@ If any `wp-content/` blob changes:
 - rerun exact-head CI as required.
 
 This policy separates moving repository head from stable deployable bytes without weakening source-currentness.
+
+
+## Latest observed deployment-byte continuity — successor2
+
+Last observed live commerce head during the subsequent CUB ×96:
+`507349fdf7af6ec575f5bbef32be734c54700645`
+
+Compare from deployment-byte anchor `2a5057cb52c799cc529d367e25cd7db25ed93876`:
+- 21 commits ahead;
+- zero `wp-content/` changes;
+- changed files were original-six commercial/research/controller documents only.
+
+Observed exact-head hosted verification:
+- workflow `M3 checkout validation`;
+- run `39109316335`;
+- job `117621816775`;
+- conclusion SUCCESS;
+- plugin syntax PASS;
+- deterministic checkout-handoff tests PASS;
+- ten-brand country-context tests PASS.
+
+This is evidence history, not an immutable head pin. The live-head / zero-deployment-drift gate still controls immediately before package build or provider mutation.
