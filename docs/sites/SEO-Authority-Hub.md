@@ -201,3 +201,37 @@ Clear this hold only when:
 
 Until then:
 `SEO_HUB_STAGING_PACKET = STALE_OR_UNBOUND`
+
+
+## Latest observed exact-head validation — public-listing hardening
+
+Last exact head fully observed during the subsequent CUB ×96:
+`f0a90b8e8821f027e220cf0f4317ad3efbc851ca`
+
+Exact-head hosted validation:
+- workflow `SEO Hub validation`;
+- run `39109456804`;
+- job `117622238609`;
+- conclusion SUCCESS.
+
+Observed successful steps include:
+- Python source tests;
+- PHP lint;
+- publication-lock smoke;
+- anonymous-search smoke;
+- homepage-category smoke;
+- article-metadata smoke;
+- public-listings smoke;
+- accidental production-config rejection;
+- staging ZIP + manifest build;
+- CI artifact upload.
+
+Observed artifact:
+- ID `12129274567`;
+- outer size `9436 bytes`;
+- outer SHA-256 `2dde282a111a64d59ba85a4e657f40cbcad7577fa950d8c97270c06726128161`.
+
+This packet is **historical exact-head evidence only** while the branch remains active. It does not clear:
+`HOLD_HEAD_MOVING_AND_INNER_PACKAGE_UNBOUND`.
+
+A later head must not inherit this PASS or artifact identity without fresh exact-head binding.
