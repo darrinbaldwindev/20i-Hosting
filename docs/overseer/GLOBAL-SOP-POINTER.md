@@ -18,9 +18,9 @@ Canonical default:
 - run one controller pass;
 - continue automatically only while genuinely new safe work remains.
 
-## Current owner-selected extended envelope
+## Current owner-selected extended envelopes
 
-Owner direction recorded on 2026-10-10 selects a **Portfolio Maximum Super Cycle** for subsequent CONT commands:
+### Portfolio Maximum Super Cycle (2026-10-10)
 
 - up to **48 distinct substantive vertical execution batches**;
 - Batch 49 — Consolidation;
@@ -28,11 +28,23 @@ Owner direction recorded on 2026-10-10 selects a **Portfolio Maximum Super Cycle
 - Batch 51 — Handoff;
 - Batch 52 — Final checkpoint.
 
-This is an explicit extended envelope, not a replacement for the canonical 12-batch default.
+### CUB Max ×96 (2026-10-19)
 
-Use fewer than 48 when useful authorised work is exhausted. Do not pad, repeat stable blockers, or invent batch completions.
+Owner direction **`Cub Max x96`** selects, for **Original Six / CUB Max commercial work** on GlobalShopCo:
 
-Any later increase above 48 requires explicit owner selection.
+- up to **96 distinct substantive vertical execution batches** (ceiling, not quota);
+- do not pad, repeat `BLOCKED_STABLE` blockers, or invent batch completions;
+- stop early when productive authorised chat-mode work is exhausted;
+- next high-value steps after controller checkpoint typically require owner/supplier gates.
+
+Canonical CUB Max controller head (as of 2026-10-19):
+`GlobalShopCo/docs/headless/ORIGINAL_SIX_CUB_CHAT_MAX_X96_SUCCESSOR34_CONTROLLER_2026-10-19.md`
+
+This is an explicit extended envelope for CUB Max commercial evidence, not a widening of merge/deploy/publication/spend/credential authority.
+
+Use fewer than the ceiling when useful authorised work is exhausted.
+
+Any later increase above these ceilings requires explicit owner selection.
 
 ## Mode-aware queue
 
