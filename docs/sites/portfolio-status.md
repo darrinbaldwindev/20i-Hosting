@@ -29,3 +29,12 @@ This public status file intentionally excludes private provider identifiers, acc
 - SEO Authority Hub: `f0a90b8...` observed with SEO validation run `39109456804` SUCCESS and artifact `12129274567`; branch remained active and staging hold remains.
 
 These observations never replace the live-head checks in the Work handoff.
+
+## Affiliate AU evidence addendum — 2026-10-25
+
+This later, **Affiliate-specific** checkpoint supersedes the Affiliate/RewardFinder artifact-readiness shorthand in the 2026-10-18 table above; it does not revalidate unrelated portfolio rows.
+
+- The support archive `11290703976` (source `eeb05366347ab77a751f75565841294931354bd9`) has previously verified outer/inner ZIP integrity and now **six of six** archived member SHA-256 digests matched independent reads of the exact Git source files. Evidence: [independent AU artifact audit](../checkpoints/AFFILIATE-AU-ARTIFACT-BYTE-AUDIT-2026-10-25.md).
+- The separate theme archive `11258622460` (source `162e87755038e011225ffb773a5bd4e65f7dcb96`) passed prior ZIP-integrity checks but contains **10 development/test files** because `.github/workflows/theme-validate.yml` packages every theme file. **P1 maintainer disposition and packaging remediation/allowlist acceptance remain outstanding**. Do not treat the theme artifact as cleared for `READY_TO_UPLOAD_20I`.
+- AU existing-site identity and authenticated File Manager/StackCP ingress remain **unverified**. The 2026-10-10 files+database backup is historical only, not a freshly verified rollback point. UK/US provider admission remains separate. Commercial programme status remains **75 HOLD / 0 READY**.
+- No upload, provider change, WordPress runtime test, DNS change, backup deletion, publication or deployment authority is conveyed by the archive checks. **AU staging admission: BLOCKED / NO UPLOAD**.
