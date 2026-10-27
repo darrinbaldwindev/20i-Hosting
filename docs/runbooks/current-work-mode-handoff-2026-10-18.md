@@ -1,4 +1,4 @@
-# 20i Current Work-Mode Handoff — 2026-10-18
+# 20i Current Work-Mode Handoff — current through 2026-10-27
 
 Status: CURRENT EXECUTION PACKET / STAGING ONLY
 
@@ -30,20 +30,29 @@ Stop at login/2FA or any required credential/security mutation.
 
 ## Exact source/package state
 
-Affiliate source:
-`main@256a64c519861258f0c44810380181127c66aa78`
+Affiliate source observed:
+`main@7277f3fa178be430e990132670e19b0112cc9c87`
+
+Re-fetch live head immediately before admission.
 
 Support artifact:
 - ID `11290703976`
 - inner ZIP SHA-256 `9fc95be766f85142a2aa5a9d33d8cb303abca4bdf68b1e87f6957d2094d71517`
 
-Theme artifact:
+Theme artifact (historical candidate — **NOT CLEARED FOR UPLOAD**):
 - ID `11258622460`
 - inner ZIP SHA-256 `e51bb5b8f4b594c821e3b7324bb8f66f67de1265734c5230665430178e4847ee`
+- 57 members;
+- 10 members under `affiliate-master/tests/`;
+- packaging workflow currently includes development/test files.
 
-Fresh source check on 2026-10-18 found Affiliate `main` unchanged from the already admitted source-current state.
+Current admission:
+- support six-member source/hash audit: MATCHED;
+- theme package: **P1 HOLD** under Affiliate-Websites #41;
+- do not upload the historical theme ZIP;
+- a remediated/accepted runtime-only theme artifact with fresh manifest/hashes is required before staging mutation.
 
-Do not regenerate these packages unless upload-member source changes.
+Current Affiliate source drift since the historical support source is documentation/controller/summary-only in the latest repository classifications, but exact upload members must still be rebound immediately before mutation.
 
 ## Existing rollback evidence
 
@@ -73,10 +82,14 @@ No unlock/reset/create/permission change.
 
 ## If ingress works
 
-Immediately before mutation:
-1. recheck Affiliate exact source-currentness;
-2. refresh/reverify rollback;
-3. upload exact current theme/support bytes only;
+Ingress success alone is **not** sufficient to upload.
+
+Before mutation:
+1. require Affiliate #41 theme packaging disposition/acceptance;
+2. obtain a remediated or explicitly accepted runtime-only theme artifact and bind exact source/member manifest + hashes;
+3. recheck Affiliate exact source-currentness;
+4. refresh/reverify rollback;
+5. upload only the exact accepted theme/support bytes;
 4. configure AU staging-only constants/private fixture paths;
 5. activate/verify theme + MU plugin;
 6. configure exact page/programme bindings;
@@ -208,7 +221,7 @@ Resume only when exact project-owned package/adoption evidence appears.
 # Controller
 
 Current 20i state:
-- RewardFinder: exact bytes current; authenticated provider existing-identity diagnostic required.
+- RewardFinder: support bytes audited; historical theme ZIP is held because it includes development/test members; authenticated provider existing-identity diagnostic and fresh rollback also required.
 - Headless: current source bound; deterministic package still required; same provider ingress class.
 - MyPrimeDelivery: package adoption blocked.
 
