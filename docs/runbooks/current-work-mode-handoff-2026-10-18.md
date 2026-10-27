@@ -1,4 +1,4 @@
-# 20i Current Work-Mode Handoff — current through 2026-10-27
+# 20i Current Work-Mode Handoff — current through 2026-10-27 (post CUB Chat Max x96)
 
 Status: CURRENT EXECUTION PACKET / STAGING ONLY
 
@@ -47,6 +47,10 @@ Theme artifact (historical candidate — **NOT CLEARED FOR UPLOAD**):
 - packaging workflow currently includes development/test files.
 
 Current admission:
+- logical technical classification: `docs/checkpoints/AFFILIATE-AU-THEME-PACKAGING-TECHNICAL-REVIEW-2026-10-27.md`;
+- exact source tree: 57 regular files = 47 runtime/theme + 10 development tests; current source has no symlink entries;
+- recommended package repair: positive runtime allowlist + fail-closed filesystem/member validation + deterministic post-build manifest verification;
+- independent Affiliate #41 reviewer/maintainer ACK and implementation evidence still missing;
 - support six-member source/hash audit: MATCHED;
 - theme package: **P1 HOLD** under Affiliate-Websites #41;
 - do not upload the historical theme ZIP;
@@ -64,6 +68,24 @@ This is historical rollback evidence, not automatically a fresh pre-mutation sna
 Before any mutation:
 - capture or reverify a current rollback point;
 - retain zero-paid-backup constraint.
+
+## Current repository-only ingress/rollback matrix
+
+Use:
+`docs/checkpoints/AFFILIATE-AU-INGRESS-ROLLBACK-GATE-MATRIX-2026-10-27.md`
+
+It already classifies repository evidence vs private provider UNKNOWNs. Do not repeat repo-only discovery.
+
+Current provider-side UNKNOWNs requiring authenticated read-only inspection:
+- File Manager feature state;
+- current File Manager functionality;
+- existing branded File Manager URL;
+- assigned StackCP user;
+- existing FTP identity usability without reset;
+- FTP/SFTP lock state;
+- current quota / zero-charge state.
+
+The 2026-10-10 backup is historical only. Fresh files + DB rollback evidence is required immediately before upload.
 
 ## Provider-ingress diagnostic order
 
