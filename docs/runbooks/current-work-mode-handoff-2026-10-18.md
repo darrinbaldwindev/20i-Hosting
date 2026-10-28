@@ -1,4 +1,4 @@
-# 20i Current Work-Mode Handoff — current through 2026-10-27 (post CUB Chat Max x96)
+# 20i Current Work-Mode Handoff — current through 2026-10-28 (post CUB Work Max)
 
 Status: CURRENT EXECUTION PACKET / STAGING ONLY
 
@@ -87,6 +87,16 @@ Current provider-side UNKNOWNs requiring authenticated read-only inspection:
 
 The 2026-10-10 backup is historical only. Fresh files + DB rollback evidence is required immediately before upload.
 
+## Latest provider-session evidence — 2026-10-28
+
+Latest Work runs reached the My20i login surface but had no authenticated session.
+
+Therefore:
+- File Manager/package-feature/StackCP/FTP provider inventory is **NOT_RUN** in the latest Work cycle;
+- do not claim ingress cleared;
+- do not enter/reset/create credentials;
+- resume provider diagnostics only from an already-authenticated owner session.
+
 ## Provider-ingress diagnostic order
 
 1. Retry My20i File Manager once.
@@ -159,6 +169,29 @@ Before provider upload:
 5. recheck source-currentness;
 6. capture/reverify rollback.
 
+## Current deterministic commerce package
+
+Work mode built the seven-file commerce package twice from the bound deployment payload.
+
+Both copies matched:
+`49a09e31ef109dd4d190b6024067415bae12e5dfd1580bc89ec3822c33532db9`
+
+Latest observed PR #5:
+`a972f315f2d2258046645adae02c7fc3adf69094`
+
+Fresh Work comparison still found:
+`WP_CONTENT_DRIFT = ZERO`
+
+Do not rebuild merely because non-deployment files advance. Rebuild only if live compare detects deployment drift.
+
+Current exact-head CI:
+- run `40640557835`
+- job `122657449393`
+- FAILURE before execution;
+- no executable steps/logs.
+
+Thus package bytes are prepared, but runtime admission remains blocked on current-head CI plus authenticated provider access.
+
 ## Runtime acceptance
 
 Use:
@@ -189,18 +222,16 @@ Record exact runtime/deployment receipt and keep production untouched.
 Execute only after RewardFinder/commerce Headless work is blocked or complete and only with isolated staging authority.
 
 Exact source:
-`GlobalShopCo-Headless PR #18 — LIVE LOOKUP REQUIRED`
+`GlobalShopCo-Headless PR #18@26c92f2b6c2b8e39605590b605d0cfa92b4e66ab`
 
-Tree:
-`3c5a519d93aaa465d0213c1a24573d01fc9ef86d`
+Latest Work evidence:
+- exact-head run `40291455490` = FAILURE before execution;
+- jobs `121467250480`, `121467250606` = zero-step failures;
+- exact-run artifacts = none;
+- inner installable ZIP = unavailable/unverified.
 
-Exact-head SEO Hub validation:
-- **RE-FETCH REQUIRED AFTER HEAD STABILIZES**
-- do not use a historical run/job as current acceptance while PR #18 is moving
-
-CI artifact:
-- exact current artifact: **RE-FETCH REQUIRED AFTER HEAD STABILIZES**
-- historical outer artifact digests are non-transferable across head changes
+State remains:
+`HOLD_HEAD_MOVING_AND_INNER_PACKAGE_UNBOUND`
 
 Before any 20i upload:
 1. independently retrieve and hash the inner WordPress theme ZIP;
