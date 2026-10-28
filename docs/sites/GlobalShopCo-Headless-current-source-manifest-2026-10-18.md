@@ -1,6 +1,6 @@
 # GlobalShopCo Headless — Current WordPress Deployment Source Manifest
 
-Status: SOURCE-BOUND / PACKAGE NOT YET BUILT  
+Status: SOURCE-BOUND / PACKAGE BUILT AND HASHED / RUNTIME NOT ACCEPTED  
 Date: 2026-10-18
 
 ## Deployment-byte anchor identity
@@ -107,3 +107,26 @@ Before any package build/upload:
 5. only then reuse this payload identity.
 
 Any deployment-file drift invalidates this manifest immediately.
+
+
+## Deterministic package evidence — 2026-10-28
+
+Work mode built the exact seven-file deployment package twice from the bound payload.
+
+Result:
+- two independent builds matched;
+- package SHA-256:
+  `49a09e31ef109dd4d190b6024067415bae12e5dfd1580bc89ec3822c33532db9`.
+
+Latest observed live head:
+`a972f315f2d2258046645adae02c7fc3adf69094`
+
+Fresh comparison still found:
+`WP_CONTENT_DRIFT = ZERO`
+
+This package remains eligible for reuse only while:
+- live compare shows zero `wp-content/` drift;
+- all seven Git blobs still match;
+- current exact-head CI/runtime admission is separately satisfied.
+
+Package existence does not imply staging acceptance or provider authorization.
