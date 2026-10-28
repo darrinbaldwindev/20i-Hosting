@@ -4,7 +4,7 @@
 site: MyPrimeDelivery
 repository: MyPrimeDelivery
 current_default_branch: agent/overseer/initial-project-timeline
-current_controller_head: 4afcb229e8b5bb5f91ec14f92bf60bce9e84290e
+current_controller_head: 4aa64db8871b127f46e30458ac694fdc110e40aa
 target_environment: staging
 m03_synthetic_component: PASS
 m03_component_assertions: 91_PASS
@@ -81,3 +81,16 @@ The following remain gated independently:
 Do **not** provision a new 20i target yet.
 
 Resume when canonical project-owned package adoption evidence exists. Reuse the accepted 91-assertion and 45-runtime-check evidence where compatible; do not rerun generic synthetic/runtime work merely to create activity.
+
+
+## 2026-10-28 controller refresh
+
+Latest Work reconciliation observed:
+`4aa64db8871b127f46e30458ac694fdc110e40aa`
+
+No canonical adopted deployable WordPress application package was found.
+
+Therefore the blocker remains:
+`MYPRIME_20I_ADMISSION_BLOCKED_ON_CANONICAL_PACKAGE_ADOPTION`
+
+No new 20i target should be provisioned from synthetic/disposable runtime evidence alone.
