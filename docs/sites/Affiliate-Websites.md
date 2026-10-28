@@ -10,9 +10,9 @@ current_support_source_head: eeb05366347ab77a751f75565841294931354bd9
 target_environment: staging
 package_state: SUPPORT_SIX_MEMBER_HASH_MATCH; THEME_PACKAGE_P1_HOLD
 runtime_state: NOT_DEPLOYED
-provider_ingress_state: BLOCKED_ON_FILE_MANAGER; FTP_SFTP_EXISTING_AUTHORITY_NOT_YET_CHECKED
+provider_ingress_state: BLOCKED_ON_UNAUTHENTICATED_MY20I_SESSION
 rollback_state: HISTORICAL_BACKUP_2026-10-10T11:56:32+10:00; FRESHNESS_UNVERIFIED
-ready_to_upload_20i: BLOCKED_ON_THEME_PACKAGING_PROVIDER_INGRESS_FRESH_ROLLBACK
+ready_to_upload_20i: BLOCKED_ON_THEME_PACKAGING_UNAUTHENTICATED_PROVIDER_SESSION_FRESH_ROLLBACK
 ```
 
 Current public-safe readiness state:
@@ -99,3 +99,32 @@ This checkpoint supersedes the historical 2026-10-18 statement that theme packag
 - Existing provider identity evidence is historical. This checkpoint did **not** authenticate provider ingress, current site state, backup freshness, runtime, or staging acceptance. The 2026-10-10 combined files/database backup remains **historical only**.
 - AU `READY_TO_UPLOAD_20I` is **BLOCKED / NO UPLOAD** pending theme package disposition and independent acceptance, authorized provider-ingress/target inspection, and fresh rollback evidence. UK/US require independent target admission. All 75 programmes remain commercial HOLD / 0 READY.
 - Worker routing remains separate: [Affiliate #41](https://github.com/darrinbaldwindev/Affiliate-Websites/issues/41) owns theme member selection; [20i #7](https://github.com/darrinbaldwindev/20i-Hosting/issues/7) owns AU ingress/rollback documentation; [20i #8](https://github.com/darrinbaldwindev/20i-Hosting/issues/8) owns UK/US admission. None has an independently authenticated worker ACK at this checkpoint. This documentation correction is an Overseer action, **not** a worker report, provider change, backup operation or deployment approval.
+
+
+## 2026-10-28 Work evidence reconciliation
+
+Latest Work-mode evidence supersedes any stale shorthand that provider ingress is cleared.
+
+Observed:
+- My20i File Manager redirected to the provider login surface;
+- no authenticated My20i session was available to the Work run;
+- no credentials were entered, created, reset or requested;
+- exact AU package/provider inventory was therefore NOT_RUN in that cycle;
+- no upload, backup refresh, provider mutation or staging change occurred.
+
+Theme packaging remains a separate blocker:
+- historical theme ZIP still includes 10 development/test members;
+- Affiliate #41 remains the packaging-review lane;
+- no remediated/accepted runtime-only theme artifact exists yet.
+
+Rollback remains a third blocker:
+- 2026-10-10 files+DB backup is historical only;
+- fresh rollback evidence is required immediately before any future mutation.
+
+Current AU state:
+`READY_TO_UPLOAD_20I = BLOCKED / NO UPLOAD`
+
+Clearance requires all three independently:
+1. accepted runtime-only theme package;
+2. authenticated existing-authority provider ingress inspection;
+3. fresh pre-mutation rollback evidence.
