@@ -7,10 +7,10 @@ repository: GlobalShopCo-Headless
 branch: work/headless-product-identity
 current_exact_head: LIVE_LOOKUP_REQUIRED_BEFORE_MUTATION
 target_environment: isolated non-production staging only
-package_state: CURRENT_SOURCE_CI_VERIFIED__OLD_STAGING_PACKET_STALE
+package_state: SEVEN_FILE_PACKAGE_BUILT_AND_HASHED__CURRENT_HEAD_CI_BLOCKED
 publication_signal_governance: CLEARED
 runtime_acceptance: NOT_RUN
-ready_to_upload_20i: BLOCKED_ON_PROVIDER_INGRESS_AND_FRESH_RUNTIME_PACKET
+ready_to_upload_20i: BLOCKED_ON_UNAUTHENTICATED_PROVIDER_SESSION_AND_CURRENT_HEAD_CI
 ```
 
 ## Exact current evidence
@@ -164,3 +164,28 @@ Observed exact-head hosted verification:
 - ten-brand country-context tests PASS.
 
 This is evidence history, not an immutable head pin. The live-head / zero-deployment-drift gate still controls immediately before package build or provider mutation.
+
+
+## 2026-10-28 deterministic package receipt
+
+Latest Work evidence:
+
+- observed live PR #5 head: `a972f315f2d2258046645adae02c7fc3adf69094`;
+- fresh compare against the seven-file deployment-byte anchor: `WP_CONTENT_DRIFT = ZERO`;
+- deterministic seven-file WordPress package built twice;
+- both copies matched exactly;
+- package SHA-256:
+  `49a09e31ef109dd4d190b6024067415bae12e5dfd1580bc89ec3822c33532db9`.
+
+Current exact-head CI:
+- run `40640557835`;
+- job `122657449393`;
+- FAILURE before executable steps;
+- no useful job log/steps.
+
+Therefore:
+- package bytes are PREPARED and reusable while zero deployment drift remains true;
+- runtime admission is NOT cleared;
+- provider ingress is still blocked by unavailable authenticated My20i session.
+
+Do not rebuild merely because documentation/commercial files advance. Rebuild only if live `wp-content/` drift is detected.
