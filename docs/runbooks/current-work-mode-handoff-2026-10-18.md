@@ -122,11 +122,11 @@ Before mutation:
 3. recheck Affiliate exact source-currentness;
 4. refresh/reverify rollback;
 5. upload only the exact accepted theme/support bytes;
-4. configure AU staging-only constants/private fixture paths;
-5. activate/verify theme + MU plugin;
-6. configure exact page/programme bindings;
-7. run canonical RewardFinder post-upload smoke;
-8. record a redacted deployment receipt with exact source/hash/target/smoke/rollback/prod-untouched evidence.
+6. configure AU staging-only constants/private fixture paths;
+7. activate/verify theme + MU plugin;
+8. configure exact page/programme bindings;
+9. run canonical RewardFinder post-upload smoke;
+10. record a redacted deployment receipt with exact source/hash/target/smoke/rollback/prod-untouched evidence.
 
 ---
 
@@ -275,7 +275,7 @@ Resume only when exact project-owned package/adoption evidence appears.
 
 Current 20i state:
 - RewardFinder: support bytes audited; historical theme ZIP is held because it includes development/test members; authenticated provider existing-identity diagnostic and fresh rollback also required.
-- Headless: current source bound; deterministic package still required; same provider ingress class.
+- Headless: seven-file deterministic package BUILT/HASHED (`49a09e31ef109dd4d190b6024067415bae12e5dfd1580bc89ec3822c33532db9`); current-head CI remains failed before steps, source drift must be rechecked before any use, and authenticated provider ingress/fresh rollback remain blocked. No upload.
 - MyPrimeDelivery: package adoption blocked.
 
 No previous handoff may override a newer exact source or authority boundary in this document.
