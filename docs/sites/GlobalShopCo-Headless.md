@@ -189,3 +189,16 @@ Therefore:
 - provider ingress is still blocked by unavailable authenticated My20i session.
 
 Do not rebuild merely because documentation/commercial files advance. Rebuild only if live `wp-content/` drift is detected.
+
+
+## 2026-10-31 Headless source-drift invalidation (current correction)
+
+This supersedes the **reusable while zero `wp-content/` drift** statement above for the current draft PR head. The 2026-10-28 package receipt remains historical evidence only.
+
+- Previous PR #5 head: `a972f315f2d2258046645adae02c7fc3adf69094`; seven-file package SHA-256 `49a09e31ef109dd4d190b6024067415bae12e5dfd1580bc89ec3822c33532db9`.
+- Current PR #5 head: `12a304f9c77b185bf5fc6e4ad61f987d3f1f1a1d`; changed `wp-content/plugins/globalshopco-headless/globalshopco-headless.php` (blob `b5cb053c9d08724a83d5080eaf82ff71806bede1`) and `tests/m3-checkout-handoff-test.php` (blob `d7df737579755adf348a30f689809a0ccce506bf`).
+- Current-head hosted run `41092460821`, job `124189588084`: FAILURE, `steps=[]`; **integrated PHP/M3 tests NOT_RUN**. A 26/26 PASS *isolated candidate* does not establish exact-head integration or independent acceptance.
+- **Decision: PRIOR PACKAGE INVALIDATED FOR CURRENT HEAD / NO UPLOAD.** New deterministic package digest is NOT_YET_BUILT; current-head WordPress runtime NOT_RUN; independent maintainer/reviewer acceptance PENDING; authenticated My20i target ingress, fresh files+DB rollback and owner upload/deploy authority ABSENT.
+- Next Headless/Websites gate: exact-head PHP syntax + canonical M3 negative/render suite, review conservative decimal precision and currency policy, independent disposition. Only then rebuild/hash exact-current-head seven-file payload. 20i Overseer must separately verify target/rollback/authority before any upload.
+
+No Shopify product, publication, supplier/media, DNS, billing, hosting target or production mutation is authorised by this correction.

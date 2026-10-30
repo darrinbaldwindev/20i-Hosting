@@ -1,13 +1,13 @@
 # 20i portfolio deployment status
 
-Status date: 2026-10-28.
+Status date: 2026-10-28; Headless package invalidation delta: 2026-10-31.
 
 This public status file intentionally excludes private provider identifiers, account details, absolute server paths, credentials and private runtime receipts.
 
 | Workload | Current repo state | Package/readiness state | 20i state | Current blocker / next action |
 |---|---|---|---|---|
 | GlobalShopCo | Shopify remains canonical commerce/catalogue authority | Not a canonical 20i WordPress deployment target | N/A | Preserve commerce boundary; do not migrate authority into WordPress |
-| GlobalShopCo-Headless | `work/headless-product-identity@a972f315f2d2258046645adae02c7fc3adf69094` observed; zero `wp-content/` drift from seven-file anchor | Deterministic seven-file ZIP built twice; SHA-256 `49a09e31ef109dd4d190b6024067415bae12e5dfd1580bc89ec3822c33532db9`; exact-head CI `40640557835`/`122657449393` failed before execution with no steps/logs | BLOCKED_ON_PROVIDER_SESSION_AND_EXACT_HEAD_CI | Reuse ZIP only while zero deployment drift holds; resolve CI/account gate and authenticated My20i session, then isolated runtime smoke |
+| GlobalShopCo-Headless | `work/headless-product-identity@12a304f9c77b185bf5fc6e4ad61f987d3f1f1a1d`; **plugin source changed** from `a972f315...` | Prior seven-file ZIP SHA-256 `49a09e31...` is **HISTORICAL / INVALID FOR CURRENT HEAD**; canonical price negatives committed, integrated tests NOT_RUN; exact-head Actions run `41092460821`, job `124189588084` FAILURE with `steps=[]` | BLOCKED_ON_REPACKAGE_EXACT_HEAD_CI_PROVIDER_SESSION_AND_REVIEW | Rebuild and hash current-head seven-file package only after exact-head PHP/M3 verification and maintainer precision-policy review; then require authenticated My20i ingress, fresh rollback and separate staging authority |
 | SEO Authority Hub | PR #18 `26c92f2b6c2b8e39605590b605d0cfa92b4e66ab` observed | Exact-head run `40291455490`; jobs `121467250480` and `121467250606` failed before executable steps; no exact-run artifact; inner ZIP unavailable | HOLD_HEAD_MOVING_AND_INNER_PACKAGE_UNBOUND | Require successful exact-head CI + current artifact + inner ZIP binding + isolated staging authority before runtime |
 | Affiliate-Websites / RewardFinder | `main@7277f3fa178be430e990132670e19b0112cc9c87`; support source `eeb05366347ab77a751f75565841294931354bd9` | Support audit MATCHED; theme ZIP P1 HOLD (10 dev/test members); My20i session unavailable; 2026-10-10 rollback historical only | BLOCKED_ON_THEME_PACKAGING_UNAUTHENTICATED_PROVIDER_SESSION_FRESH_ROLLBACK | Clear Affiliate #41 package, restore authenticated existing-authority My20i session, capture fresh rollback, then upload/smoke |
 | Affiliate AU | 26 programme records; commercial status remains HOLD | Support payload audited; theme deployment package NOT accepted | BLOCKED / NO UPLOAD | Theme runtime-only package + exact manifest/hashes; current AU target/ingress verification; fresh files+DB rollback; then staging upload/smoke/receipt |
