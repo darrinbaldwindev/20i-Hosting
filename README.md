@@ -42,3 +42,9 @@ Paid backups are not authorized. Owner-controlled off-provider backup and restor
 This repository coordinates deployments; it does not copy or replace application source. A deployment is admitted only from a named repository and exact full commit SHA, with a reproducible artifact, tests, rollback material, and an owner-approved target tuple.
 
 Unknown provider IDs, entitlements, costs, regions, package types, or live configuration are deliberately recorded as `UNKNOWN` or `TBD` and must not be guessed.
+
+## Proposed portfolio CUB v2.1 operating process
+
+For the 20i Overseer, record completed work, material change, accountable blocker and resume trigger, and one next executable action/mode. Prefer vertical completion over repeated status checks. Continue authorised read-only and offline preparation through Chat when other computer modes are unavailable. See the [proposed portfolio adoption matrix](https://github.com/darrinbaldwindev/Overseer/pull/95).
+
+This is a documentation proposal only. Existing hosting identity, entitlement, pricing, private-access, rollback, release and owner approval requirements remain authoritative. No provider changes, public deployment, site activation or billing authority follows from CUB adoption.
