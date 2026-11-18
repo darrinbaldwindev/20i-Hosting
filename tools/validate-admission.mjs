@@ -19,15 +19,27 @@ const REQUIRED_EVIDENCE = Object.freeze([
 ]);
 const UNKNOWN = /^(?:unknown|tbd|not_run|not_verified|pending|n\/a)$/i;
 
-/** Reject dates normalized by Date.parse (e.g. February 30) and non-UTC inputs.
- * Returns the UTC millisecond instant, or null for invalid chronology.
+/** Parse real UTC calendar dates without truncating evidence chronology.
+ * Date.parse normalizes impossible days and loses sub-millisecond precision;
+ * retain arbitrary fractional digits to compare exact declared event ordering.
  */
 function parseUtcTimestamp(value) {
-  if (typeof value !== 'string' ||
-      !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/.test(value)) return null;
-  const millis = Date.parse(value);
-  if (!Number.isFinite(millis)) return null;
-  return new Date(millis).toISOString().slice(0, 19) === value.slice(0, 19) ? millis : null;
+  if (typeof value !== 'string') return null;
+  const match = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:\.(\d+))?Z$/.exec(value);
+  if (!match) return null;
+  const millis = Date.parse(match[1] + 'Z');
+  if (!Number.isFinite(millis) ||
+      new Date(millis).toISOString().slice(0, 19) !== match[1]) return null;
+  return { seconds: millis / 1000, fraction: match[2] ?? '' };
+}
+
+/** Compare fractional digits lexicographically after equal-width zero padding.
+ * .1, .10 and .100000 represent the same instant; .100001 is later.
+ */
+function isLaterTimestamp(candidate, baseline) {
+  if (candidate.seconds !== baseline.seconds) return candidate.seconds > baseline.seconds;
+  const width = Math.max(candidate.fraction.length, baseline.fraction.length);
+  return candidate.fraction.padEnd(width, '0') > baseline.fraction.padEnd(width, '0');
 }
 
 function nonempty(value) {
@@ -77,7 +89,7 @@ export function assess(manifest, artifactBytes) {
           entry.state !== 'PASS' || !nonempty(entry.reference) ||
           !nonempty(entry.verifier) || checkedTime === null) {
         fail('EVIDENCE_MISSING_OR_UNVERIFIED:' + gate);
-      } else if (verifiedTime !== null && checkedTime > verifiedTime) {
+      } else if (verifiedTime !== null && isLaterTimestamp(checkedTime, verifiedTime)) {
         fail('EVIDENCE_AFTER_VERIFICATION:' + gate);
       }
     }
