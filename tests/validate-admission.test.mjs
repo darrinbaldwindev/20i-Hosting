@@ -109,3 +109,10 @@ test('earlier evidence timestamp remains valid structurally', () => {
   assert.equal(out.result, 'PRECHECK_COMPLETE_NOT_AUTHORIZED', JSON.stringify(out));
   assert.equal(out.upload_authorized, false);
 });
+
+test('RED: numeric artifact SHA fails closed without throwing', () => {
+  blocked(m => m.artifact_sha256 = 12345, 'ARTIFACT_SHA256_REQUIRED');
+});
+test('RED: array artifact SHA fails closed without throwing', () => {
+  blocked(m => m.artifact_sha256 = [hash], 'ARTIFACT_SHA256_REQUIRED');
+});
