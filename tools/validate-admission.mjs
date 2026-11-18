@@ -92,9 +92,10 @@ function main() {
   } catch (error) {
     console.log(JSON.stringify({
       result: 'BLOCKED', upload_authorized: false,
-      errors: ['INPUT_UNREADABLE_OR_INVALID:' + error.code || 'INPUT_ERROR']
+      errors: ['INPUT_UNREADABLE_OR_INVALID:' + (error.code ?? 'INPUT_ERROR')]
     }));
     process.exitCode = 2;
   }
 }
-if (process.argv[1] && import.meta.url === new URL('file://' + process.argv[1]).href) main();
+import { pathToFileURL } from 'node:url';
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main();
