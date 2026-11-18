@@ -46,14 +46,14 @@ export function assess(manifest, artifactBytes) {
       !/^https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+(?:\.git)?$/.test(manifest.repository)) {
     fail('CANONICAL_REPOSITORY_UNVERIFIED');
   }
-  if (!SHA40.test(manifest.source_commit_sha ?? '')) fail('FULL_SOURCE_SHA_REQUIRED');
-  if (!SHA64.test(manifest.artifact_sha256 ?? '')) fail('ARTIFACT_SHA256_REQUIRED');
+  if (typeof manifest.source_commit_sha !== 'string' || !SHA40.test(manifest.source_commit_sha)) fail('FULL_SOURCE_SHA_REQUIRED');
+  if (typeof manifest.artifact_sha256 !== 'string' || !SHA64.test(manifest.artifact_sha256)) fail('ARTIFACT_SHA256_REQUIRED');
   if (manifest.target_environment !== 'staging') fail('STAGING_ONLY');
   if (!nonempty(manifest.provider_target_id)) fail('PROVIDER_TARGET_UNKNOWN');
   if (!nonempty(manifest.provider_region)) fail('PROVIDER_REGION_UNKNOWN');
   if (!nonempty(manifest.package_type)) fail('PACKAGE_TYPE_UNKNOWN');
-  if (!nonempty(manifest.rollback_artifact_sha256) ||
-      !SHA64.test(manifest.rollback_artifact_sha256 ?? '')) fail('ROLLBACK_HASH_REQUIRED');
+  if (typeof manifest.rollback_artifact_sha256 !== 'string' ||
+      !SHA64.test(manifest.rollback_artifact_sha256)) fail('ROLLBACK_HASH_REQUIRED');
   if (!nonempty(manifest.verified_by)) fail('VERIFIER_UNKNOWN');
   const verifiedTime = parseUtcTimestamp(manifest.verified_at_utc);
   if (verifiedTime === null) fail('UTC_TIMESTAMP_REQUIRED');
@@ -62,7 +62,8 @@ export function assess(manifest, artifactBytes) {
   if (!Buffer.isBuffer(artifactBytes)) fail('ARTIFACT_BYTES_ARGUMENT_INVALID');
   else {
     const computed = createHash('sha256').update(artifactBytes).digest('hex');
-    if (computed !== manifest.artifact_sha256?.toLowerCase()) fail('ARTIFACT_HASH_MISMATCH');
+    if (typeof manifest.artifact_sha256 !== 'string' ||
+        computed !== manifest.artifact_sha256.toLowerCase()) fail('ARTIFACT_HASH_MISMATCH');
   }
   const evidence = manifest.evidence;
   if (!evidence || typeof evidence !== 'object' || Array.isArray(evidence)) {
