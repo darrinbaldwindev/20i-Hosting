@@ -116,3 +116,10 @@ test('RED: numeric artifact SHA fails closed without throwing', () => {
 test('RED: array artifact SHA fails closed without throwing', () => {
   blocked(m => m.artifact_sha256 = [hash], 'ARTIFACT_SHA256_REQUIRED');
 });
+
+test('malformed source SHA object fails closed without throwing', () => {
+  blocked(m => m.source_commit_sha = {toString: 'shadowed'}, 'FULL_SOURCE_SHA_REQUIRED');
+});
+test('malformed rollback SHA object fails closed without throwing', () => {
+  blocked(m => m.rollback_artifact_sha256 = {toString: 'shadowed'}, 'ROLLBACK_HASH_REQUIRED');
+});
