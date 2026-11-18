@@ -4,6 +4,7 @@ on:
     paths:
       - 'tools/validate-admission.mjs'
       - 'tests/validate-admission.test.mjs'
+      - 'tests/validate-admission-cli.test.mjs'
       - '.github/workflows/admission-preflight.yml'
   workflow_dispatch:
 permissions:
@@ -23,5 +24,6 @@ jobs:
         run: |
           node --check tools/validate-admission.mjs
           node --check tests/validate-admission.test.mjs
+          node --check tests/validate-admission-cli.test.mjs
       - name: Negative and boundary tests
-        run: node --test tests/validate-admission.test.mjs
+        run: node --test tests/validate-admission.test.mjs tests/validate-admission-cli.test.mjs
