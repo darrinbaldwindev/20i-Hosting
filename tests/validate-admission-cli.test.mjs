@@ -158,3 +158,25 @@ test('RED: FIFO artifact is rejected promptly rather than blocking the preflight
     assert(out.errors.includes('INPUT_UNREADABLE_OR_INVALID:ARTIFACT_NOT_REGULAR_FILE'));
   })
 );
+
+test('CLI rejects artifact directory on every platform', () =>
+  inScratch(({ dir, manifestPath }) => {
+    const proc = runCli(manifestPath, dir);
+    assert.equal(proc.status, 2);
+    const out = JSON.parse(proc.stdout);
+    assert.equal(out.result, 'BLOCKED');
+    assert.equal(out.upload_authorized, false);
+    assert(out.errors.includes('INPUT_UNREADABLE_OR_INVALID:ARTIFACT_NOT_REGULAR_FILE'));
+  })
+);
+
+test('CLI rejects manifest directory on every platform', () =>
+  inScratch(({ dir, artifactPath }) => {
+    const proc = runCli(dir, artifactPath);
+    assert.equal(proc.status, 2);
+    const out = JSON.parse(proc.stdout);
+    assert.equal(out.result, 'BLOCKED');
+    assert.equal(out.upload_authorized, false);
+    assert(out.errors.includes('INPUT_UNREADABLE_OR_INVALID:MANIFEST_NOT_REGULAR_FILE'));
+  })
+);
