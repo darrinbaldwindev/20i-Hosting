@@ -123,3 +123,32 @@ test('malformed source SHA object fails closed without throwing', () => {
 test('malformed rollback SHA object fails closed without throwing', () => {
   blocked(m => m.rollback_artifact_sha256 = {toString: 'shadowed'}, 'ROLLBACK_HASH_REQUIRED');
 });
+
+test('RED: sub-millisecond future evidence must not pass chronological preflight', () => {
+  blocked(m => {
+    m.verified_at_utc = '2026-11-18T09:30:00.123456789Z';
+    m.evidence.independent_review.checked_at_utc = '2026-11-18T09:30:00.123456790Z';
+  }, 'EVIDENCE_AFTER_VERIFICATION:independent_review');
+});
+test('RED: within same millisecond, later microsecond evidence blocks', () => {
+  blocked(m => {
+    m.verified_at_utc = '2026-11-18T09:30:00.000001Z';
+    m.evidence.independent_review.checked_at_utc = '2026-11-18T09:30:00.000002Z';
+  }, 'EVIDENCE_AFTER_VERIFICATION:independent_review');
+});
+test('earlier fractional evidence remains valid', () => {
+  const m = valid();
+  m.verified_at_utc = '2026-11-18T09:30:00.123456790Z';
+  m.evidence.independent_review.checked_at_utc = '2026-11-18T09:30:00.123456789Z';
+  const out = assess(m, payload);
+  assert.equal(out.result, 'PRECHECK_COMPLETE_NOT_AUTHORIZED', JSON.stringify(out));
+  assert.equal(out.upload_authorized, false);
+});
+test('equivalent UTC fractions of different widths remain valid', () => {
+  const m = valid();
+  m.verified_at_utc = '2026-11-18T09:30:00.100000Z';
+  m.evidence.independent_review.checked_at_utc = '2026-11-18T09:30:00.1Z';
+  const out = assess(m, payload);
+  assert.equal(out.result, 'PRECHECK_COMPLETE_NOT_AUTHORIZED', JSON.stringify(out));
+  assert.equal(out.upload_authorized, false);
+});
