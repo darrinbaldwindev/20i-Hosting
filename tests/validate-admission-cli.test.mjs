@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -113,5 +113,48 @@ test('CLI exits zero on complete fixture but never grants upload authority', () 
     assert.equal(out.result, 'PRECHECK_COMPLETE_NOT_AUTHORIZED');
     assert.equal(out.upload_authorized, false);
     assert.deepEqual(out.errors, []);
+  })
+);
+
+test('RED: artifact symlink is rejected even with matching bytes', { skip: process.platform === 'win32' }, () =>
+  inScratch(({ dir, manifestPath, artifactPath }) => {
+    const link = join(dir, 'artifact-link.zip');
+    symlinkSync(artifactPath, link);
+    const proc = runCli(manifestPath, link);
+    assert.equal(proc.status, 2);
+    const out = JSON.parse(proc.stdout);
+    assert.equal(out.result, 'BLOCKED');
+    assert.equal(out.upload_authorized, false);
+    assert(out.errors.includes('INPUT_UNREADABLE_OR_INVALID:ARTIFACT_NOT_REGULAR_FILE'));
+  })
+);
+
+test('RED: manifest symlink is rejected even with otherwise complete evidence', { skip: process.platform === 'win32' }, () =>
+  inScratch(({ dir, manifestPath, artifactPath }) => {
+    const link = join(dir, 'manifest-link.json');
+    symlinkSync(manifestPath, link);
+    const proc = runCli(link, artifactPath);
+    assert.equal(proc.status, 2);
+    const out = JSON.parse(proc.stdout);
+    assert.equal(out.result, 'BLOCKED');
+    assert.equal(out.upload_authorized, false);
+    assert(out.errors.includes('INPUT_UNREADABLE_OR_INVALID:MANIFEST_NOT_REGULAR_FILE'));
+  })
+);
+
+test('RED: FIFO artifact is rejected promptly rather than blocking the preflight', { skip: process.platform === 'win32' }, (t) =>
+  inScratch(({ dir, manifestPath }) => {
+    const fifo = join(dir, 'artifact-fifo.zip');
+    try { execFileSync('mkfifo', [fifo]); }
+    catch { t.skip('mkfifo unavailable on this host'); return; }
+    const proc = spawnSync(process.execPath, [cli, manifestPath, fifo], {
+      encoding: 'utf8', timeout: 1100, maxBuffer: 1024 * 1024
+    });
+    assert.equal(proc.error, undefined, 'preflight hung on nonregular input: ' + proc.error);
+    assert.equal(proc.status, 2);
+    const out = JSON.parse(proc.stdout);
+    assert.equal(out.result, 'BLOCKED');
+    assert.equal(out.upload_authorized, false);
+    assert(out.errors.includes('INPUT_UNREADABLE_OR_INVALID:ARTIFACT_NOT_REGULAR_FILE'));
   })
 );
