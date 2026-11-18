@@ -7,8 +7,8 @@
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 
-const SHA40 = /^[a-f0-9]{40}$/;
-const SHA64 = /^[a-f0-9]{64}$/;
+const SHA40 = /^[a-f0-9]{40}$/i;
+const SHA64 = /^[a-f0-9]{64}$/i;
 const REQUIRED_EVIDENCE = Object.freeze([
   'source_custody', 'source_currentness', 'dependency_review',
   'platform_compatibility', 'bootstrap', 'configuration_secrets',
@@ -49,10 +49,10 @@ export function assess(manifest, artifactBytes) {
       !Number.isFinite(Date.parse(manifest.verified_at_utc))) fail('UTC_TIMESTAMP_REQUIRED');
   if (manifest.result !== 'BLOCKED') fail('SELF_DECLARED_READY_FORBIDDEN');
   if (!Array.isArray(manifest.unknowns) || manifest.unknowns.length !== 0) fail('UNRESOLVED_UNKNOWNS');
-  if (!Buffer.isBuffer(artifactBytes)) fail('ARTIFACT_BYTES_NOT_READ');
+  if (!Buffer.isBuffer(artifactBytes)) fail('ARTIFACT_BYTES_ARGUMENT_INVALID');
   else {
     const computed = createHash('sha256').update(artifactBytes).digest('hex');
-    if (computed !== manifest.artifact_sha256) fail('ARTIFACT_HASH_MISMATCH');
+    if (computed !== manifest.artifact_sha256?.toLowerCase()) fail('ARTIFACT_HASH_MISMATCH');
   }
   const evidence = manifest.evidence;
   if (!evidence || typeof evidence !== 'object' || Array.isArray(evidence)) {
