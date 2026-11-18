@@ -57,6 +57,9 @@ staging access for 20i #13/#14 remain blocked.
   `verified_at_utc`. This is chronology consistency, **not** evidence
   freshness proof: the independent admission controller still determines
   whether backup, approval and source observations are current enough.
+  Comparison retains the **full fractional-second precision** supplied by
+  each timestamp; a later event within the same millisecond is still blocked.
+  Equivalent representations such as `.1Z` and `.100000Z` compare equal.
 - `assess()` never grants upload authority. The CLI's exit code zero signals
   only a structurally complete offline precheck, never provider acceptance.
 - Native CI runs the pure-function negative tests **and** subprocess CLI
