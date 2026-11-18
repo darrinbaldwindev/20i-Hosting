@@ -66,3 +66,21 @@ test('unresolved unknowns block', () => blocked(m => m.unknowns = ['provider'], 
 test('missing verifier blocks', () => blocked(m => m.verified_by = 'PENDING', 'VERIFIER_UNKNOWN'));
 test('invalid timestamp blocks', () => blocked(m => m.verified_at_utc = 'yesterday', 'UTC_TIMESTAMP_REQUIRED'));
 test('invalid repository blocks', () => blocked(m => m.repository = 'file:///tmp/source', 'CANONICAL_REPOSITORY_UNVERIFIED'));
+
+test('uppercase source SHA and artifact checksums are accepted structurally', () => {
+  const m = valid();
+  m.source_commit_sha = 'ABCDEF0123'.repeat(4);
+  m.artifact_sha256 = hash.toUpperCase();
+  m.rollback_artifact_sha256 = hash.toUpperCase();
+  const out = assess(m, payload);
+  assert.equal(out.result, 'PRECHECK_COMPLETE_NOT_AUTHORIZED', JSON.stringify(out));
+  assert.equal(out.upload_authorized, false);
+});
+test('invalid artifact argument is a distinct fail-closed diagnostic', () => {
+  const out = assess(valid(), null);
+  assert(out.errors.includes('ARTIFACT_BYTES_ARGUMENT_INVALID'));
+  assert.equal(out.upload_authorized, false);
+});
+test('uppercase mismatched artifact hash still blocks', () => {
+  blocked(m => m.artifact_sha256 = 'F'.repeat(64), 'ARTIFACT_HASH_MISMATCH');
+});
