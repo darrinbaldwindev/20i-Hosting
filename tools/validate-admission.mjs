@@ -19,6 +19,17 @@ const REQUIRED_EVIDENCE = Object.freeze([
 ]);
 const UNKNOWN = /^(?:unknown|tbd|not_run|not_verified|pending|n\/a)$/i;
 
+/** Reject dates normalized by Date.parse (e.g. February 30) and non-UTC inputs.
+ * Returns the UTC millisecond instant, or null for invalid chronology.
+ */
+function parseUtcTimestamp(value) {
+  if (typeof value !== 'string' ||
+      !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/.test(value)) return null;
+  const millis = Date.parse(value);
+  if (!Number.isFinite(millis)) return null;
+  return new Date(millis).toISOString().slice(0, 19) === value.slice(0, 19) ? millis : null;
+}
+
 function nonempty(value) {
   return typeof value === 'string' && value.trim().length > 0 &&
     !UNKNOWN.test(value.trim());
@@ -44,9 +55,8 @@ export function assess(manifest, artifactBytes) {
   if (!nonempty(manifest.rollback_artifact_sha256) ||
       !SHA64.test(manifest.rollback_artifact_sha256 ?? '')) fail('ROLLBACK_HASH_REQUIRED');
   if (!nonempty(manifest.verified_by)) fail('VERIFIER_UNKNOWN');
-  if (typeof manifest.verified_at_utc !== 'string' ||
-      !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/.test(manifest.verified_at_utc) ||
-      !Number.isFinite(Date.parse(manifest.verified_at_utc))) fail('UTC_TIMESTAMP_REQUIRED');
+  const verifiedTime = parseUtcTimestamp(manifest.verified_at_utc);
+  if (verifiedTime === null) fail('UTC_TIMESTAMP_REQUIRED');
   if (manifest.result !== 'BLOCKED') fail('SELF_DECLARED_READY_FORBIDDEN');
   if (!Array.isArray(manifest.unknowns) || manifest.unknowns.length !== 0) fail('UNRESOLVED_UNKNOWNS');
   if (!Buffer.isBuffer(artifactBytes)) fail('ARTIFACT_BYTES_ARGUMENT_INVALID');
@@ -60,12 +70,14 @@ export function assess(manifest, artifactBytes) {
   } else {
     for (const gate of REQUIRED_EVIDENCE) {
       const entry = evidence[gate];
+      const checkedTime = entry && typeof entry === 'object' && !Array.isArray(entry)
+        ? parseUtcTimestamp(entry.checked_at_utc) : null;
       if (!entry || typeof entry !== 'object' || Array.isArray(entry) ||
           entry.state !== 'PASS' || !nonempty(entry.reference) ||
-          !nonempty(entry.verifier) ||
-          !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/.test(entry.checked_at_utc ?? '') ||
-          !Number.isFinite(Date.parse(entry.checked_at_utc ?? ''))) {
+          !nonempty(entry.verifier) || checkedTime === null) {
         fail('EVIDENCE_MISSING_OR_UNVERIFIED:' + gate);
+      } else if (verifiedTime !== null && checkedTime > verifiedTime) {
+        fail('EVIDENCE_AFTER_VERIFICATION:' + gate);
       }
     }
   }
