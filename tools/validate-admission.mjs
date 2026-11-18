@@ -4,7 +4,7 @@
  * Never grants READY or upload authority. All evidence is supplied by the caller;
  * authoritative source, reviewer and provider checks remain separate.
  */
-import { readFileSync } from 'node:fs';
+import { closeSync, constants, fstatSync, lstatSync, openSync, readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 
 const SHA40 = /^[a-f0-9]{40}$/i;
@@ -102,6 +102,30 @@ export function assess(manifest, artifactBytes) {
   };
 }
 
+/** Accept only regular files. Reject links, directories, pipes and devices before
+ * reading, then verify the opened descriptor to avoid a path-replacement race.
+ * O_NOFOLLOW prevents a swapped-in symlink on platforms that support it.
+ * O_NONBLOCK prevents a swapped-in FIFO from hanging before fstat.
+ */
+function readRegularInput(filename, kind, encoding) {
+  function reject() {
+    const error = new Error('Regular file required');
+    error.code = kind + '_NOT_REGULAR_FILE';
+    throw error;
+  }
+  if (!lstatSync(filename).isFile()) reject();
+  const flags = constants.O_RDONLY | (constants.O_NOFOLLOW ?? 0) |
+    (constants.O_NONBLOCK ?? 0);
+  let fd;
+  try {
+    fd = openSync(filename, flags);
+    if (!fstatSync(fd).isFile()) reject();
+    return readFileSync(fd, encoding);
+  } finally {
+    if (fd !== undefined) closeSync(fd);
+  }
+}
+
 function main() {
   if (process.argv.length !== 4) {
     console.error('usage: node tools/validate-admission.mjs manifest.json artifact.zip');
@@ -109,8 +133,8 @@ function main() {
     return;
   }
   try {
-    const manifest = JSON.parse(readFileSync(process.argv[2], 'utf8'));
-    const bytes = readFileSync(process.argv[3]);
+    const manifest = JSON.parse(readRegularInput(process.argv[2], 'MANIFEST', 'utf8'));
+    const bytes = readRegularInput(process.argv[3], 'ARTIFACT');
     const output = assess(manifest, bytes);
     console.log(JSON.stringify(output, null, 2));
     process.exitCode = output.result === 'BLOCKED' ? 2 : 0;
