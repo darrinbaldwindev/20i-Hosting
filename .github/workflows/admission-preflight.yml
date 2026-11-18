@@ -1,0 +1,25 @@
+name: 20i admission preflight
+on:
+  pull_request:
+    paths:
+      - 'tools/validate-admission.mjs'
+      - 'tests/validate-admission.test.mjs'
+      - '.github/workflows/admission-preflight.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  preflight-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax checks
+        run: |
+          node --check tools/validate-admission.mjs
+          node --check tests/validate-admission.test.mjs
+      - name: Negative and boundary tests
+        run: node --test tests/validate-admission.test.mjs
