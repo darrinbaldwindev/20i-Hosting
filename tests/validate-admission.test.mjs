@@ -84,3 +84,28 @@ test('invalid artifact argument is a distinct fail-closed diagnostic', () => {
 test('uppercase mismatched artifact hash still blocks', () => {
   blocked(m => m.artifact_sha256 = 'F'.repeat(64), 'ARTIFACT_HASH_MISMATCH');
 });
+
+test('RED: impossible February 30 verification date blocks', () => {
+  blocked(m => m.verified_at_utc = '2026-02-30T09:30:00Z', 'UTC_TIMESTAMP_REQUIRED');
+});
+test('RED: impossible evidence calendar date blocks', () => {
+  blocked(m => m.evidence.source_currentness.checked_at_utc = '2026-02-30T09:30:00Z', 'EVIDENCE_MISSING_OR_UNVERIFIED:source_currentness');
+});
+test('RED: evidence produced after verification time blocks', () => {
+  blocked(m => m.evidence.independent_review.checked_at_utc = '2026-11-18T09:31:00Z', 'EVIDENCE_AFTER_VERIFICATION:independent_review');
+});
+test('valid leap day date is accepted structurally', () => {
+  const m = valid();
+  m.verified_at_utc = '2024-02-29T23:59:59Z';
+  for (const item of Object.values(m.evidence)) item.checked_at_utc = '2024-02-29T23:59:59Z';
+  const out = assess(m, payload);
+  assert.equal(out.result, 'PRECHECK_COMPLETE_NOT_AUTHORIZED', JSON.stringify(out));
+  assert.equal(out.upload_authorized, false);
+});
+test('earlier evidence timestamp remains valid structurally', () => {
+  const m = valid();
+  m.evidence.independent_review.checked_at_utc = '2026-11-18T09:29:59Z';
+  const out = assess(m, payload);
+  assert.equal(out.result, 'PRECHECK_COMPLETE_NOT_AUTHORIZED', JSON.stringify(out));
+  assert.equal(out.upload_authorized, false);
+});
