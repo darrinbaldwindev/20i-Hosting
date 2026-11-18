@@ -65,3 +65,30 @@ staging access for 20i #13/#14 remain blocked.
 - Native CI runs the pure-function negative tests **and** subprocess CLI
   integration tests for exit codes and output, with immutable pinned
   Node 24-native GitHub Actions dependencies.
+
+
+## Regular-file and cross-platform CLI safety
+
+The CLI accepts **regular local files only** for both the manifest and the
+artifact. It blocks symlinks, directories, named pipes/FIFOs and device-like
+inputs, rather than following links or waiting on pipes. The code checks both
+the path and the opened file descriptor; on platforms supporting
+`O_NOFOLLOW` and `O_NONBLOCK`, it also uses those flags to reduce path
+substitution and blocking risks. This does not certify a filesystem against
+concurrent modification or make a subsequently uploaded artifact immutable.
+
+- Nonregular manifest inputs: `BLOCKED` with exit 2 and
+  `INPUT_UNREADABLE_OR_INVALID:MANIFEST_NOT_REGULAR_FILE`.
+- Nonregular artifact inputs: `BLOCKED` with exit 2 and
+  `INPUT_UNREADABLE_OR_INVALID:ARTIFACT_NOT_REGULAR_FILE`.
+- Portable directory-input tests run on Linux and Windows. Symlink and FIFO
+  regression tests run on Linux and are **skipped on hosted Windows** because
+  these fixtures depend on platform privileges and POSIX named pipes.
+- Passing hosted Windows CI is **not** physical Windows host acceptance,
+  authenticated My20i admission, independent reviewer signoff or upload
+  permission.
+
+**Known limitation:** The current CLI reads regular files fully into memory
+before hashing; exceptionally large packages require a separately reviewed
+streaming implementation. The read-only preflight must not be treated as
+proof of artifact freshness immediately before provider mutation.
