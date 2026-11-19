@@ -67,6 +67,17 @@ staging access for 20i #13/#14 remain blocked.
   Node 24-native GitHub Actions dependencies.
 
 
+## UTF-8 manifest integrity
+
+Manifest JSON must contain **well-formed UTF-8 bytes**. The CLI uses fatal
+UTF-8 decoding, not `Buffer.toString('utf8')`, which would silently replace
+invalid byte sequences and alter provider identifiers or review references.
+Malformed input fails closed with exit 2,
+`INPUT_UNREADABLE_OR_INVALID:MANIFEST_INVALID_UTF8`. Valid Unicode text
+remains permitted, including multibyte characters that span the 64 KiB
+manifest read boundary. This is a byte-encoding consistency check, **not**
+proof that user-supplied provider or review identifiers are authentic.
+
 ## Regular-file and cross-platform CLI safety
 
 The CLI accepts **regular local files only** for both the manifest and the
