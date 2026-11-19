@@ -298,3 +298,39 @@ test('legitimate Unicode site text is accepted without granting upload permissio
     assert.equal(out.upload_authorized, false);
   })
 );
+
+test('UTF-8 character straddling the 64 KiB read chunk boundary remains intact', () =>
+  inScratch(({ manifestPath, artifactPath }) => {
+    const m = manifest();
+    const markerOffset = Buffer.from(JSON.stringify(m)).indexOf(Buffer.from('test-only'));
+    assert(markerOffset >= 0 && markerOffset < 65535);
+    m.site = 'x'.repeat(65535 - markerOffset) + 'é';
+    const content = Buffer.from(JSON.stringify(m), 'utf8');
+    assert.equal(content[65535], 0xc3);
+    assert.equal(content[65536], 0xa9);
+    writeFileSync(manifestPath, content);
+    const proc = runCli(manifestPath, artifactPath);
+    assert.equal(proc.status, 0, proc.stdout + proc.stderr);
+    const out = JSON.parse(proc.stdout);
+    assert.equal(out.result, 'PRECHECK_COMPLETE_NOT_AUTHORIZED');
+    assert.equal(out.upload_authorized, false);
+  })
+);
+
+test('truncated UTF-8 sequence inside evidence is blocked without replacement', () =>
+  inScratch(({ manifestPath, artifactPath }) => {
+    const bytes = Buffer.from(JSON.stringify(manifest()));
+    const offset = bytes.indexOf(Buffer.from('test-only-fixture'));
+    assert(offset >= 0);
+    bytes[offset] = 0xe2;
+    bytes[offset + 1] = 0x28;
+    bytes[offset + 2] = 0xa1;
+    writeFileSync(manifestPath, bytes);
+    const proc = runCli(manifestPath, artifactPath);
+    assert.equal(proc.status, 2, proc.stdout + proc.stderr);
+    const out = JSON.parse(proc.stdout);
+    assert.equal(out.result, 'BLOCKED');
+    assert.equal(out.upload_authorized, false);
+    assert(out.errors.includes('INPUT_UNREADABLE_OR_INVALID:MANIFEST_INVALID_UTF8'));
+  })
+);
