@@ -156,7 +156,13 @@ function readBoundedManifest(filename) {
       chunks.push(Buffer.from(chunk.subarray(0, bytesRead)));
     }
     if (total !== expectedSize) throw inputError('MANIFEST_CHANGED_DURING_READ');
-    return Buffer.concat(chunks, total).toString('utf8');
+    // Buffer.toString('utf8') silently inserts replacement characters for
+    // invalid bytes. Fail closed rather than accepting rewritten evidence.
+    try {
+      return new TextDecoder('utf-8', { fatal: true }).decode(Buffer.concat(chunks, total));
+    } catch {
+      throw inputError('MANIFEST_INVALID_UTF8');
+    }
   });
 }
 
