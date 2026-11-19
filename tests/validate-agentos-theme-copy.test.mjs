@@ -10,12 +10,20 @@ import { auditTheme } from '../tools/validate-agentos-theme-copy.mjs';
 const script = fileURLToPath(new URL('../tools/validate-agentos-theme-copy.mjs', import.meta.url));
 function fixture(fn) {
   const dir = mkdtempSync(join(tmpdir(), '20i-agentos-claims-'));
+  const cleanup = () => rmSync(dir, { recursive: true, force: true });
   try {
     for (const name of ['style.css','functions.php','front-page.php','index.php']) {
       writeFileSync(join(dir,name), name === 'style.css' ? 'Theme Name: Candidate' : '<?php // This is a nonpublic staging draft');
     }
-    return fn(dir);
-  } finally { rmSync(dir, { recursive: true, force: true }); }
+    const value = fn(dir);
+    // Keep the scratch directory alive through asynchronous callbacks.
+    if (value && typeof value.then === 'function') return Promise.resolve(value).finally(cleanup);
+    cleanup();
+    return value;
+  } catch (error) {
+    cleanup();
+    throw error;
+  }
 }
 function checked(text, code) {
   return fixture(dir => {
