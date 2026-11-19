@@ -11,9 +11,10 @@ import { pathToFileURL } from 'node:url';
 const EXPECTED_FILES = Object.freeze([
   'style.css', 'functions.php', 'front-page.php', 'index.php'
 ]);
-const TEXT_SUFFIX = /\.(?:php|html?|jsx?|tsx?|md|txt|json|css|svg|xml)$/i;
+const TEXT_SUFFIX = /\.(?:php\d*|phtml|phar|inc|tpl|twig|html?|[mc]?jsx?|[mc]?tsx?|md|txt|json|css|s[ac]ss|less|svg|xml|ya?ml)$/i;
 const MAX_TEXT_FILE_BYTES = 1024 * 1024;
 const MAX_ENTRIES = 256;
+const MAX_DIAGNOSTICS = 100;
 const MAX_DEPTH = 32;
 const READ_CHUNK = 64 * 1024;
 const RULES = Object.freeze([
@@ -44,11 +45,17 @@ export function auditTheme(sourceDir) {
   } catch { return blocked(['SOURCE_DIRECTORY_UNREADABLE']); }
 
   const errors = [];
+  // Preserve fail-closed status but cap hostile/accidental report amplification.
+  // The sentinel records that further specific findings were suppressed.
+  function recordError(message) {
+    if (errors.length < MAX_DIAGNOSTICS) errors.push(message);
+    else if (errors.length === MAX_DIAGNOSTICS) errors.push('DIAGNOSTICS_TRUNCATED');
+  }
   const checked = [];
   for (const name of EXPECTED_FILES) {
     try {
-      if (!lstatSync(join(root, name)).isFile()) errors.push('WORDPRESS_THEME_FILE_INVALID:' + name);
-    } catch { errors.push('WORDPRESS_THEME_FILE_MISSING:' + name); }
+      if (!lstatSync(join(root, name)).isFile()) recordError('WORDPRESS_THEME_FILE_INVALID:' + name);
+    } catch { recordError('WORDPRESS_THEME_FILE_MISSING:' + name); }
   }
   // Pure local source scanner. An opened descriptor, not a checked path, supplies text.
   // O_NOFOLLOW reduces symlink substitution risks on supported platforms.
@@ -60,11 +67,11 @@ export function auditTheme(sourceDir) {
       const before = fstatSync(fd);
       if (!before.isFile() || before.dev !== inspected.dev ||
           before.ino !== inspected.ino) {
-        errors.push('SOURCE_CHANGED_DURING_SCAN:' + name);
+        recordError('SOURCE_CHANGED_DURING_SCAN:' + name);
         return null;
       }
       if (before.size > MAX_TEXT_FILE_BYTES) {
-        errors.push('SOURCE_TEXT_TOO_LARGE:' + name);
+        recordError('SOURCE_TEXT_TOO_LARGE:' + name);
         return null;
       }
       const chunk = Buffer.alloc(READ_CHUNK), chunks = [];
@@ -72,7 +79,7 @@ export function auditTheme(sourceDir) {
       while ((n = readSync(fd, chunk, 0, chunk.length, null)) > 0) {
         total += n;
         if (total > MAX_TEXT_FILE_BYTES) {
-          errors.push('SOURCE_TEXT_TOO_LARGE:' + name);
+          recordError('SOURCE_TEXT_TOO_LARGE:' + name);
           return null;
         }
         chunks.push(Buffer.from(chunk.subarray(0, n)));
@@ -82,12 +89,12 @@ export function auditTheme(sourceDir) {
           before.mtimeMs !== after.mtimeMs || before.ctimeMs !== after.ctimeMs ||
           !current.isFile() || current.dev !== after.dev ||
           current.ino !== after.ino) {
-        errors.push('SOURCE_CHANGED_DURING_SCAN:' + name);
+        recordError('SOURCE_CHANGED_DURING_SCAN:' + name);
         return null;
       }
       try { return new TextDecoder('utf-8', { fatal: true }).decode(Buffer.concat(chunks, total)); }
-      catch { errors.push('SOURCE_INVALID_UTF8:' + name); return null; }
-    } catch { errors.push('SOURCE_READ_FAILED:' + name); return null; }
+      catch { recordError('SOURCE_INVALID_UTF8:' + name); return null; }
+    } catch { recordError('SOURCE_READ_FAILED:' + name); return null; }
     finally { if (fd !== undefined) closeSync(fd); }
   }
 
@@ -103,17 +110,17 @@ export function auditTheme(sourceDir) {
         const name = relative(root, path).split(sep).join('/');
         const info = lstatSync(path);
         if (entry.isSymbolicLink() || info.isSymbolicLink()) {
-          errors.push('SYMLINK_FORBIDDEN:' + name);
+          recordError('SYMLINK_FORBIDDEN:' + name);
           continue;
         }
         if (entry.isDirectory()) {
-          if (!info.isDirectory()) { errors.push('SOURCE_CHANGED_DURING_SCAN:' + name); continue; }
+          if (!info.isDirectory()) { recordError('SOURCE_CHANGED_DURING_SCAN:' + name); continue; }
           if (depth >= MAX_DEPTH) throw new Error('SOURCE_DEPTH_LIMIT_EXCEEDED');
           pending.push({dir: path, depth: depth + 1});
           continue;
         }
         if (!entry.isFile() || !info.isFile()) {
-          errors.push('NONREGULAR_OR_CHANGED_FILE:' + name);
+          recordError('NONREGULAR_OR_CHANGED_FILE:' + name);
           continue;
         }
         checked.push(name);
@@ -123,7 +130,7 @@ export function auditTheme(sourceDir) {
         const lines = source.split(/\r?\n/);
         for (let i = 0; i < lines.length; i++) {
           for (const [id, pattern] of RULES) {
-            if (pattern.test(lines[i])) errors.push('COPY_REVIEW_REQUIRED:' + id + ':' + name + ':' + (i + 1));
+            if (pattern.test(lines[i])) recordError('COPY_REVIEW_REQUIRED:' + id + ':' + name + ':' + (i + 1));
           }
         }
       }
@@ -131,7 +138,7 @@ export function auditTheme(sourceDir) {
   }
   try { scan(); }
   catch (error) {
-    errors.push(['SOURCE_ENTRY_LIMIT_EXCEEDED','SOURCE_DEPTH_LIMIT_EXCEEDED'].includes(error.message)
+    recordError(['SOURCE_ENTRY_LIMIT_EXCEEDED','SOURCE_DEPTH_LIMIT_EXCEEDED'].includes(error.message)
       ? error.message : 'SOURCE_SCAN_UNREADABLE');
   }
 
