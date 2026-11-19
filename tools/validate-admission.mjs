@@ -4,7 +4,7 @@
  * Never grants READY or upload authority. All evidence is supplied by the caller;
  * authoritative source, reviewer and provider checks remain separate.
  */
-import { closeSync, constants, fstatSync, lstatSync, openSync, readFileSync } from 'node:fs';
+import { closeSync, constants, fstatSync, lstatSync, openSync, readSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 
 const SHA40 = /^[a-f0-9]{40}$/i;
@@ -46,7 +46,7 @@ function nonempty(value) {
   return typeof value === 'string' && value.trim().length > 0 &&
     !UNKNOWN.test(value.trim());
 }
-export function assess(manifest, artifactBytes) {
+function assessObservedDigest(manifest, observedDigest) {
   const errors = [];
   const fail = (reason) => errors.push(reason);
   if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest)) {
@@ -71,11 +71,10 @@ export function assess(manifest, artifactBytes) {
   if (verifiedTime === null) fail('UTC_TIMESTAMP_REQUIRED');
   if (manifest.result !== 'BLOCKED') fail('SELF_DECLARED_READY_FORBIDDEN');
   if (!Array.isArray(manifest.unknowns) || manifest.unknowns.length !== 0) fail('UNRESOLVED_UNKNOWNS');
-  if (!Buffer.isBuffer(artifactBytes)) fail('ARTIFACT_BYTES_ARGUMENT_INVALID');
-  else {
-    const computed = createHash('sha256').update(artifactBytes).digest('hex');
-    if (typeof manifest.artifact_sha256 !== 'string' ||
-        computed !== manifest.artifact_sha256.toLowerCase()) fail('ARTIFACT_HASH_MISMATCH');
+  if (observedDigest === null) fail('ARTIFACT_BYTES_ARGUMENT_INVALID');
+  else if (typeof manifest.artifact_sha256 !== 'string' ||
+           observedDigest !== manifest.artifact_sha256.toLowerCase()) {
+    fail('ARTIFACT_HASH_MISMATCH');
   }
   const evidence = manifest.evidence;
   if (!evidence || typeof evidence !== 'object' || Array.isArray(evidence)) {
@@ -102,28 +101,78 @@ export function assess(manifest, artifactBytes) {
   };
 }
 
-/** Accept only regular files. Reject links, directories, pipes and devices before
- * reading, then verify the opened descriptor to avoid a path-replacement race.
- * O_NOFOLLOW prevents a swapped-in symlink on platforms that support it.
- * O_NONBLOCK prevents a swapped-in FIFO from hanging before fstat.
+/** Public API still checks real bytes; callers cannot submit an unchecked digest. */
+export function assess(manifest, artifactBytes) {
+  const digest = Buffer.isBuffer(artifactBytes)
+    ? createHash('sha256').update(artifactBytes).digest('hex')
+    : null;
+  return assessObservedDigest(manifest, digest);
+}
+
+/** Read only regular files with descriptor checks and bounded memory.
+ * A read may detect size/mtime/ctime changes, but cannot certify a source
+ * against adversarial same-size replacement during hashing.
  */
-function readRegularInput(filename, kind, encoding) {
-  function reject() {
-    const error = new Error('Regular file required');
-    error.code = kind + '_NOT_REGULAR_FILE';
-    throw error;
-  }
-  if (!lstatSync(filename).isFile()) reject();
+const MAX_MANIFEST_BYTES = 1024 * 1024;
+const READ_CHUNK_BYTES = 64 * 1024;
+
+function inputError(code) {
+  const error = new Error('Invalid or changed input');
+  error.code = code;
+  return error;
+}
+
+function withRegularInput(filename, kind, consume) {
+  if (!lstatSync(filename).isFile()) throw inputError(kind + '_NOT_REGULAR_FILE');
   const flags = constants.O_RDONLY | (constants.O_NOFOLLOW ?? 0) |
     (constants.O_NONBLOCK ?? 0);
   let fd;
   try {
     fd = openSync(filename, flags);
-    if (!fstatSync(fd).isFile()) reject();
-    return readFileSync(fd, encoding);
+    const before = fstatSync(fd);
+    if (!before.isFile()) throw inputError(kind + '_NOT_REGULAR_FILE');
+    const output = consume(fd, before.size);
+    const after = fstatSync(fd);
+    if (before.size !== after.size || before.mtimeMs !== after.mtimeMs ||
+        before.ctimeMs !== after.ctimeMs) {
+      throw inputError(kind + '_CHANGED_DURING_READ');
+    }
+    return output;
   } finally {
     if (fd !== undefined) closeSync(fd);
   }
+}
+
+function readBoundedManifest(filename) {
+  return withRegularInput(filename, 'MANIFEST', (fd, expectedSize) => {
+    if (expectedSize > MAX_MANIFEST_BYTES) throw inputError('MANIFEST_TOO_LARGE');
+    const chunks = [];
+    const chunk = Buffer.alloc(READ_CHUNK_BYTES);
+    let total = 0;
+    let bytesRead;
+    while ((bytesRead = readSync(fd, chunk, 0, chunk.length, null)) > 0) {
+      total += bytesRead;
+      if (total > MAX_MANIFEST_BYTES) throw inputError('MANIFEST_TOO_LARGE');
+      chunks.push(Buffer.from(chunk.subarray(0, bytesRead)));
+    }
+    if (total !== expectedSize) throw inputError('MANIFEST_CHANGED_DURING_READ');
+    return Buffer.concat(chunks, total).toString('utf8');
+  });
+}
+
+function hashRegularArtifact(filename) {
+  return withRegularInput(filename, 'ARTIFACT', (fd, expectedSize) => {
+    const hash = createHash('sha256');
+    const chunk = Buffer.alloc(READ_CHUNK_BYTES);
+    let total = 0;
+    let bytesRead;
+    while ((bytesRead = readSync(fd, chunk, 0, chunk.length, null)) > 0) {
+      total += bytesRead;
+      hash.update(chunk.subarray(0, bytesRead));
+    }
+    if (total !== expectedSize) throw inputError('ARTIFACT_CHANGED_DURING_READ');
+    return hash.digest('hex');
+  });
 }
 
 function main() {
@@ -133,9 +182,9 @@ function main() {
     return;
   }
   try {
-    const manifest = JSON.parse(readRegularInput(process.argv[2], 'MANIFEST', 'utf8'));
-    const bytes = readRegularInput(process.argv[3], 'ARTIFACT');
-    const output = assess(manifest, bytes);
+    const manifest = JSON.parse(readBoundedManifest(process.argv[2]));
+    const artifactDigest = hashRegularArtifact(process.argv[3]);
+    const output = assessObservedDigest(manifest, artifactDigest);
     console.log(JSON.stringify(output, null, 2));
     process.exitCode = output.result === 'BLOCKED' ? 2 : 0;
   } catch (error) {
