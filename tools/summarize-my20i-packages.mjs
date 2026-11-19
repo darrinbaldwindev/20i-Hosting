@@ -90,6 +90,42 @@ export function summarizePackageExport(input) {
   };
 }
 
+/**
+ * JSON.parse uses last-key-wins semantics. Reject duplicate object property
+ * names (including different JSON escape spellings of the same name) so an
+ * untrusted export cannot silently overwrite package evidence.
+ * JSON.parse validates syntax separately; this scan only identifies keys.
+ */
+function hasDuplicateJsonObjectKeys(source) {
+  const stack = [];
+  for (let i = 0; i < source.length;) {
+    const ch = source[i];
+    if (ch === '{') { stack.push(new Set()); i++; continue; }
+    if (ch === '[') { stack.push(null); i++; continue; }
+    if (ch === '}' || ch === ']') { stack.pop(); i++; continue; }
+    if (ch !== '"') { i++; continue; }
+
+    const start = i;
+    i++;
+    while (i < source.length) {
+      if (source[i] === '\\') { i += 2; continue; }
+      if (source[i] === '"') break;
+      i++;
+    }
+    const end = i;
+    i++;
+    let next = i;
+    while (next < source.length && /\s/.test(source[next])) next++;
+    const current = stack[stack.length - 1];
+    if (source[next] !== ':' || !(current instanceof Set)) continue;
+    // Decode JSON escapes before comparing names, e.g. "id" and "\u0069d".
+    const key = JSON.parse(source.slice(start, end + 1));
+    if (current.has(key)) return true;
+    current.add(key);
+  }
+  return false;
+}
+
 export function readLocalExport(filename) {
   if (typeof filename !== 'string' || !filename) return blocked('INPUT_PATH_REQUIRED');
   let descriptor;
@@ -123,6 +159,7 @@ export function readLocalExport(filename) {
     let data;
     try { data = JSON.parse(source); }
     catch { return blocked('INPUT_INVALID_JSON'); }
+    if (hasDuplicateJsonObjectKeys(source)) return blocked('INPUT_DUPLICATE_JSON_KEY');
     return summarizePackageExport(data);
   } catch {
     return blocked('INPUT_UNREADABLE_OR_CHANGED');
