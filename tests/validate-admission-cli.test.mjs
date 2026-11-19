@@ -252,3 +252,49 @@ test('streaming hash detects mutation in the final chunk of a large artifact', (
     assert(out.errors.includes('ARTIFACT_HASH_MISMATCH'));
   })
 );
+
+test('RED: invalid UTF-8 in provider identifier is blocked, not silently rewritten', () =>
+  inScratch(({ manifestPath, artifactPath }) => {
+    const bytes = Buffer.from(JSON.stringify(manifest()));
+    const offset = bytes.indexOf(Buffer.from('test-only-redacted'));
+    assert(offset >= 0);
+    bytes[offset + 4] = 0xff;
+    writeFileSync(manifestPath, bytes);
+    const proc = runCli(manifestPath, artifactPath);
+    assert.equal(proc.status, 2, proc.stdout);
+    const out = JSON.parse(proc.stdout);
+    assert.equal(out.result, 'BLOCKED');
+    assert.equal(out.upload_authorized, false);
+    assert(out.errors.includes('INPUT_UNREADABLE_OR_INVALID:MANIFEST_INVALID_UTF8'));
+  })
+);
+
+test('RED: overlong UTF-8 sequence inside evidence is rejected without replacement', () =>
+  inScratch(({ manifestPath, artifactPath }) => {
+    const bytes = Buffer.from(JSON.stringify(manifest()));
+    const offset = bytes.indexOf(Buffer.from('test-only-fixture'));
+    assert(offset >= 0);
+    bytes[offset] = 0xc0;
+    bytes[offset + 1] = 0xaf;
+    writeFileSync(manifestPath, bytes);
+    const proc = runCli(manifestPath, artifactPath);
+    assert.equal(proc.status, 2, proc.stdout);
+    const out = JSON.parse(proc.stdout);
+    assert.equal(out.result, 'BLOCKED');
+    assert.equal(out.upload_authorized, false);
+    assert(out.errors.includes('INPUT_UNREADABLE_OR_INVALID:MANIFEST_INVALID_UTF8'));
+  })
+);
+
+test('legitimate Unicode site text is accepted without granting upload permission', () =>
+  inScratch(({ manifestPath, artifactPath }) => {
+    const m = manifest();
+    m.site = 'Café — Australian staging';
+    writeFileSync(manifestPath, JSON.stringify(m));
+    const proc = runCli(manifestPath, artifactPath);
+    assert.equal(proc.status, 0, proc.stdout + proc.stderr);
+    const out = JSON.parse(proc.stdout);
+    assert.equal(out.result, 'PRECHECK_COMPLETE_NOT_AUTHORIZED');
+    assert.equal(out.upload_authorized, false);
+  })
+);
