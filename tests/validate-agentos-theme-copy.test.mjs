@@ -164,3 +164,39 @@ test('RED: SVG text marketing claims are inspected, not silently skipped', () =>
   assert.equal(r.result, 'BLOCKED', JSON.stringify(r));
   assert(r.errors.some(x => x.includes('COPY_REVIEW_REQUIRED:UNVERIFIED_LIVE:assets/hero.svg')), JSON.stringify(r));
 }));
+
+test('RED: ESM source is scanned for live subscription calls to action', () => fixture(dir => {
+  mkdirSync(join(dir, 'assets'));
+  writeFileSync(join(dir, 'assets', 'site.mjs'), 'export const cta = "Subscribe now";');
+  const r = auditTheme(dir);
+  assert.equal(r.result, 'BLOCKED', JSON.stringify(r));
+  assert(r.errors.some(x => x.includes('COPY_REVIEW_REQUIRED:ACTIVE_PAYMENT_OR_SIGNUP:assets/site.mjs')), JSON.stringify(r));
+}));
+test('RED: CommonJS source is scanned for live payment calls to action', () => fixture(dir => {
+  mkdirSync(join(dir, 'assets'));
+  writeFileSync(join(dir, 'assets', 'site.cjs'), 'module.exports = "Pay now";');
+  const r = auditTheme(dir);
+  assert.equal(r.result, 'BLOCKED', JSON.stringify(r));
+  assert(r.errors.some(x => x.includes('COPY_REVIEW_REQUIRED:ACTIVE_PAYMENT_OR_SIGNUP:assets/site.cjs')), JSON.stringify(r));
+}));
+test('RED: alternative PHP template extension cannot hide live assertions', () => fixture(dir => {
+  writeFileSync(join(dir, 'promotional.phtml'), '<?php echo "Production-ready";');
+  const r = auditTheme(dir);
+  assert.equal(r.result, 'BLOCKED', JSON.stringify(r));
+  assert(r.errors.some(x => x.includes('COPY_REVIEW_REQUIRED:UNVERIFIED_LIVE:promotional.phtml')), JSON.stringify(r));
+}));
+test('RED: PHP include file cannot hide trial promises', () => fixture(dir => {
+  writeFileSync(join(dir, 'promotional.inc'), '<?php echo "Free trial included";');
+  const r = auditTheme(dir);
+  assert.equal(r.result, 'BLOCKED', JSON.stringify(r));
+  assert(r.errors.some(x => x.includes('COPY_REVIEW_REQUIRED:UNAPPROVED_TRIAL:promotional.inc')), JSON.stringify(r));
+}));
+test('RED: thousands of repeated claims produce bounded diagnostics and explicit truncation', () => fixture(dir => {
+  writeFileSync(join(dir, 'front-page.php'), '<?php // fixture\n' + 'Buy now\n'.repeat(2000));
+  const r = auditTheme(dir);
+  assert.equal(r.result, 'BLOCKED', JSON.stringify(r).slice(0, 500));
+  assert(r.errors.length <= 101, 'unbounded errors: ' + r.errors.length);
+  assert(r.errors.includes('DIAGNOSTICS_TRUNCATED'), JSON.stringify(r).slice(0, 500));
+  assert.equal(r.upload_authorized, false);
+  assert.equal(r.publish_authorized, false);
+}));
