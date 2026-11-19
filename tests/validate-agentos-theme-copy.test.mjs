@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, mkdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -107,4 +107,52 @@ test('CLI with safe fixture exits 0 yet never authorizes upload', () => fixture(
   assert.equal(r.result,'COPY_SCAN_COMPLETE_NOT_ACCEPTED');
   assert.equal(r.upload_authorized,false);
   assert.equal(r.publish_authorized,false);
+}));
+
+test('RED: directory-only input cannot bypass the bounded entry limit', () => fixture(dir => {
+  for (let i = 0; i < 260; i++) mkdirSync(join(dir, 'empty-' + i));
+  const r = auditTheme(dir);
+  assert.equal(r.result, 'BLOCKED', JSON.stringify(r));
+  assert(r.errors.includes('SOURCE_ENTRY_LIMIT_EXCEEDED'), JSON.stringify(r));
+  assert.equal(r.upload_authorized, false);
+}));
+test('RED: deeply nested empty directories hit an explicit depth fence', () => fixture(dir => {
+  let nested = dir;
+  for (let i = 0; i < 36; i++) {
+    nested = join(nested, 'd');
+    mkdirSync(nested);
+  }
+  const r = auditTheme(dir);
+  assert.equal(r.result, 'BLOCKED', JSON.stringify(r));
+  assert(r.errors.includes('SOURCE_DEPTH_LIMIT_EXCEEDED'), JSON.stringify(r));
+  assert.equal(r.publish_authorized, false);
+}));
+test('RED: extra CLI argument gives precise usage failure without scanning', () => fixture(dir => {
+  const p = spawnSync(process.execPath, [script, dir, 'unexpected'], {encoding:'utf8'});
+  assert.equal(p.status, 2, p.stdout + p.stderr);
+  const r = JSON.parse(p.stdout);
+  assert.equal(r.result, 'BLOCKED');
+  assert(r.errors.includes('CLI_ARGUMENTS_INVALID'), JSON.stringify(r));
+  assert.match(p.stderr, /usage:/i);
+}));
+test('RED: async fixture retains directory until callback has settled', async () => {
+  await fixture(async dir => {
+    await Promise.resolve();
+    assert(existsSync(dir), 'temporary test files were deleted before async callback resumed');
+    const r = auditTheme(dir);
+    assert.equal(r.result, 'COPY_SCAN_COMPLETE_NOT_ACCEPTED', JSON.stringify(r));
+  });
+});
+test('RED: CSS generated checkout copy is inspected, not silently skipped', () => fixture(dir => {
+  writeFileSync(join(dir, 'style.css'), 'Theme Name: Candidate\n.offer::after { content: "Subscribe now"; }');
+  const r = auditTheme(dir);
+  assert.equal(r.result, 'BLOCKED', JSON.stringify(r));
+  assert(r.errors.some(x => x.includes('COPY_REVIEW_REQUIRED:ACTIVE_PAYMENT_OR_SIGNUP:style.css')), JSON.stringify(r));
+}));
+test('RED: SVG text marketing claims are inspected, not silently skipped', () => fixture(dir => {
+  mkdirSync(join(dir, 'assets'));
+  writeFileSync(join(dir, 'assets', 'hero.svg'), '<svg xmlns="http://www.w3.org/2000/svg"><text>Production-ready</text></svg>');
+  const r = auditTheme(dir);
+  assert.equal(r.result, 'BLOCKED', JSON.stringify(r));
+  assert(r.errors.some(x => x.includes('COPY_REVIEW_REQUIRED:UNVERIFIED_LIVE:assets/hero.svg')), JSON.stringify(r));
 }));
