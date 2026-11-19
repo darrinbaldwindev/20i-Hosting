@@ -59,6 +59,7 @@ export function summarizePackageExport(input) {
       return blocked('PACKAGE_TYPE_INVALID');
     }
     if (!Array.isArray(packageItem.names) ||
+        packageItem.names.length === 0 ||
         packageItem.names.length > MAX_ALIASES_PER_PACKAGE ||
         !packageItem.names.every(x => typeof x === 'string' && x.length > 0 && x.length <= 253)) {
       return blocked('PACKAGE_DOMAINS_SHAPE_INVALID');
