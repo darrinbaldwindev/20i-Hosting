@@ -221,3 +221,34 @@ test('empty artifact is hashed exactly and remains non-authorizing', () =>
     assert.equal(out.upload_authorized, false);
   })
 );
+
+test('manifest exactly at the 1 MiB byte boundary remains structurally valid', () =>
+  inScratch(({ manifestPath, artifactPath }) => {
+    const content = JSON.stringify(manifest());
+    const remaining = 1024 * 1024 - Buffer.byteLength(content);
+    assert(remaining > 0);
+    writeFileSync(manifestPath, content + ' '.repeat(remaining));
+    const proc = runCli(manifestPath, artifactPath);
+    assert.equal(proc.status, 0, proc.stdout + proc.stderr);
+    const out = JSON.parse(proc.stdout);
+    assert.equal(out.result, 'PRECHECK_COMPLETE_NOT_AUTHORIZED');
+    assert.equal(out.upload_authorized, false);
+  })
+);
+
+test('streaming hash detects mutation in the final chunk of a large artifact', () =>
+  inScratch(({ manifestPath, artifactPath }) => {
+    const original = Buffer.alloc(8 * 1024 * 1024, 0x6b);
+    const m = manifest();
+    m.artifact_sha256 = createHash('sha256').update(original).digest('hex');
+    writeFileSync(manifestPath, JSON.stringify(m));
+    original[original.length - 1] ^= 1;
+    writeFileSync(artifactPath, original);
+    const proc = runCli(manifestPath, artifactPath);
+    assert.equal(proc.status, 2);
+    const out = JSON.parse(proc.stdout);
+    assert.equal(out.result, 'BLOCKED');
+    assert.equal(out.upload_authorized, false);
+    assert(out.errors.includes('ARTIFACT_HASH_MISMATCH'));
+  })
+);
