@@ -88,7 +88,17 @@ concurrent modification or make a subsequently uploaded artifact immutable.
   authenticated My20i admission, independent reviewer signoff or upload
   permission.
 
-**Known limitation:** The current CLI reads regular files fully into memory
-before hashing; exceptionally large packages require a separately reviewed
-streaming implementation. The read-only preflight must not be treated as
-proof of artifact freshness immediately before provider mutation.
+**Bounded-memory implementation (2026-11-19):** Manifest JSON is limited to
+**1 MiB** of UTF-8 bytes and is read with a bound, not loaded unconditionally.
+Oversized manifests are `BLOCKED`, exit 2,
+`INPUT_UNREADABLE_OR_INVALID:MANIFEST_TOO_LARGE`. A 1 MiB manifest remains
+valid. The CLI hashes regular artifact bytes **incrementally in 64 KiB chunks**
+without buffering the entire ZIP, including empty and multi-megabyte files.
+Changed file size, modification time or change time detected during reading
+blocks admission with `*_CHANGED_DURING_READ`.
+
+**Remaining limitation:** A concurrent adversary may still mutate artifact
+bytes without an observable size/time change; these checks do not establish
+source freshness, immutable custody or an exact post-upload artifact identity.
+Source-currentness and pre-mutation independent reread remain mandatory.
+Passing the CLI precheck never authorizes provider mutation.
