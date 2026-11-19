@@ -138,3 +138,6 @@ test('twenty-I schema cannot prove WordPress install count, quotas or region', (
   assert.equal(r.private_access_verified,false);
   assert.equal(r.rollback_verified,false);
 });
+
+test('RED: package with empty domain list is schema drift, not zero actual domains', () =>
+  expectBlocked(summarizePackageExport([row(12,{names:[]})]),'PACKAGE_DOMAINS_SHAPE_INVALID'));
