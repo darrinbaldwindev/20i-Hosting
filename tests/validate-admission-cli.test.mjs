@@ -180,3 +180,44 @@ test('CLI rejects manifest directory on every platform', () =>
     assert(out.errors.includes('INPUT_UNREADABLE_OR_INVALID:MANIFEST_NOT_REGULAR_FILE'));
   })
 );
+
+test('RED: oversized otherwise-valid manifest is blocked before JSON admission', () =>
+  inScratch(({ manifestPath, artifactPath }) => {
+    writeFileSync(manifestPath, JSON.stringify(manifest()) + ' '.repeat(1024 * 1024 + 1));
+    const proc = runCli(manifestPath, artifactPath);
+    assert.equal(proc.status, 2);
+    const out = JSON.parse(proc.stdout);
+    assert.equal(out.result, 'BLOCKED');
+    assert.equal(out.upload_authorized, false);
+    assert(out.errors.includes('INPUT_UNREADABLE_OR_INVALID:MANIFEST_TOO_LARGE'));
+  })
+);
+
+test('large regular artifact is hashed accurately without changing authority', () =>
+  inScratch(({ manifestPath, artifactPath }) => {
+    const large = Buffer.alloc(8 * 1024 * 1024, 0x6b);
+    const m = manifest();
+    m.artifact_sha256 = createHash('sha256').update(large).digest('hex');
+    writeFileSync(manifestPath, JSON.stringify(m));
+    writeFileSync(artifactPath, large);
+    const proc = runCli(manifestPath, artifactPath);
+    assert.equal(proc.status, 0, proc.stdout + proc.stderr);
+    const out = JSON.parse(proc.stdout);
+    assert.equal(out.result, 'PRECHECK_COMPLETE_NOT_AUTHORIZED');
+    assert.equal(out.upload_authorized, false);
+  })
+);
+
+test('empty artifact is hashed exactly and remains non-authorizing', () =>
+  inScratch(({ manifestPath, artifactPath }) => {
+    const m = manifest();
+    m.artifact_sha256 = createHash('sha256').update(Buffer.alloc(0)).digest('hex');
+    writeFileSync(manifestPath, JSON.stringify(m));
+    writeFileSync(artifactPath, Buffer.alloc(0));
+    const proc = runCli(manifestPath, artifactPath);
+    assert.equal(proc.status, 0);
+    const out = JSON.parse(proc.stdout);
+    assert.equal(out.result, 'PRECHECK_COMPLETE_NOT_AUTHORIZED');
+    assert.equal(out.upload_authorized, false);
+  })
+);
