@@ -141,3 +141,34 @@ test('twenty-I schema cannot prove WordPress install count, quotas or region', (
 
 test('RED: package with empty domain list is schema drift, not zero actual domains', () =>
   expectBlocked(summarizePackageExport([row(12,{names:[]})]),'PACKAGE_DOMAINS_SHAPE_INVALID'));
+
+test('RED: repeated enabled JSON key must not let last value silently overwrite first', () => temp(file => {
+  const encoded = JSON.stringify([row()]);
+  assert(encoded.includes('"enabled":true'));
+  writeFileSync(file, encoded.replace('"enabled":true', '"enabled":false,"enabled":true'));
+  expectBlocked(readLocalExport(file), 'INPUT_DUPLICATE_JSON_KEY');
+}));
+test('RED: equivalent escaped and literal JSON property keys are duplicates', () => temp(file => {
+  const encoded = JSON.stringify([row()]);
+  assert(encoded.includes('"id":12'));
+  writeFileSync(file, encoded.replace('"id":12', '"\\u0069d":99,"id":12'));
+  expectBlocked(readLocalExport(file), 'INPUT_DUPLICATE_JSON_KEY');
+}));
+test('RED: duplicate unknown nested metadata keys must also fail closed', () => temp(file => {
+  const encoded = JSON.stringify([row()]);
+  writeFileSync(file, encoded.replace('"enabled":true', '"productSpec":{"scope":1,"scope":2},"enabled":true'));
+  expectBlocked(readLocalExport(file), 'INPUT_DUPLICATE_JSON_KEY');
+}));
+test('escaped words and JSON-like strings inside values are not mistaken for keys', () => temp(file => {
+  const entry = row(12,{name:'the string has "enabled":false but is not an object key'});
+  writeFileSync(file, JSON.stringify([entry]));
+  const result = readLocalExport(file);
+  assert.equal(result.result, 'LOCAL_PACKAGE_SUMMARY_NOT_PROVIDER_VERIFIED', JSON.stringify(result));
+  assertRedacted(result);
+}));
+test('the same property name in distinct package objects is valid', () => temp(file => {
+  writeFileSync(file, JSON.stringify([row(12),row(13)]));
+  const result = readLocalExport(file);
+  assert.equal(result.result, 'LOCAL_PACKAGE_SUMMARY_NOT_PROVIDER_VERIFIED', JSON.stringify(result));
+  assert.equal(result.package_count,2);
+}));
