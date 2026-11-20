@@ -11,7 +11,6 @@ import hashlib
 import io
 import json
 import os
-from pathlib import Path
 import stat
 import sys
 import zipfile
@@ -165,7 +164,8 @@ def _member_bytes(files: dict[str, bytes], relative: str, label: str) -> bytes:
     # invent a canonical repository or trust ambiguous duplicate theme roots.
     candidates = [
         raw for name, raw in files.items()
-        if name == relative or name.endswith("/agentos-commercial-theme/" + relative)
+        if (name == relative or name == "agentos-commercial-theme/" + relative or
+            name.endswith("/agentos-commercial-theme/" + relative))
     ]
     if not candidates:
         raise ArchiveBlocked(label + "_MISSING_THEME_MEMBER")
