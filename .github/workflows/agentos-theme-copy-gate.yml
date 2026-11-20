@@ -4,6 +4,8 @@ on:
     paths:
       - 'tools/validate-agentos-theme-copy.mjs'
       - 'tests/validate-agentos-theme-copy.test.mjs'
+      - 'tools/verify_agentos_theme_handoff.py'
+      - 'tests/verify_agentos_theme_handoff_test.py'
       - 'docs/agentos-commercial/**'
       - '.github/workflows/agentos-theme-copy-gate.yml'
   workflow_dispatch:
@@ -30,3 +32,5 @@ jobs:
           node --check tests/validate-agentos-theme-copy.test.mjs
       - name: Read-only negative and safety tests
         run: node --test tests/validate-agentos-theme-copy.test.mjs
+      - name: Historical WordPress ZIP handoff fixture checks
+        run: python -m unittest discover -s tests -p verify_agentos_theme_handoff_test.py -v
