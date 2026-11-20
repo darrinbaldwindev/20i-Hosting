@@ -33,6 +33,28 @@ Required WordPress candidate files: style.css, functions.php, front-page.php, in
 
 This negative scanner **does not parse PHP, JavaScript, CSS or WordPress semantics**, prove claims truthful, authenticate the GitHub source/owner, review licenses, check accessibility or legal compliance, check plugin/security configuration, or inspect My20i. Although Dirent, lstat and opened-descriptor checks reduce obvious unsafe source substitution, **a hostile/concurrently modified directory tree cannot be proven immutable by this scanner**. False positives and false negatives are possible; independent source and commercial review are still required.
 
+## Original WordPress v0.2 archive handoff — offline acceptance precheck
+
+Issue #14 records two Chat-local ZIP artifacts created 16 Nov 2026; **they are not present in canonical Git source custody**:
+
+| Recorded source artifact | Recorded bytes | Recorded SHA-256 |
+|---|---:|---|
+| `agentos-wordpress-theme-v0.2.zip` | 14,526 | `34ce6b861ffaf31969fdc5ae461bec375f8df164695c4ee309a904c9ac70cd74` |
+| `agentos-wordpress-source-v0.2.zip` | 24,643 | `e531a91b2865b46f74366c690ee7750cde2458e7f23035f4d4d5ffd78f465ef0` |
+
+The read-only transfer checker added to this **existing site admission PR #17**, `tools/verify_agentos_theme_handoff.py`, accepts only two local ZIP paths and pins **both** historical bytes/size values:
+
+~~~sh
+python tools/verify_agentos_theme_handoff.py /private/agentos-wordpress-theme-v0.2.zip /private/agentos-wordpress-source-v0.2.zip
+python -m unittest discover -s tests -p verify_agentos_theme_handoff_test.py -v
+~~~
+
+It rejects missing/nonregular/symlink inputs, size or digest mismatch, changed file metadata, unsafe archive paths, encrypted or nonregular entries, duplicate ZIP members, overlarge/decompression-bomb candidates, and any discrepancy between 11 core WordPress theme files in the theme-only and source packages. It does not extract or execute PHP. It uses **binary-mode file reads on Windows** and 64 KiB bounded reads, with a maximum 2 MiB per archive and 4 MiB declared uncompressed member total. Real-world ZIP structures not matching the expected theme root fail closed and must be separately investigated rather than forcing admission.
+
+A valid match yields `HISTORICAL_ZIPS_MATCH_NOT_ACCEPTED`, **never READY**. This proves only that the transferred bytes match *recorded historical artifact hashes* and that the 11 listed theme files agree across the pair. It does **not** check all 17 originally declared source-manifest members or their per-member hashes, prove current canonical source freshness, original custodian approval, browser/WordPress behavior, independent claims acceptance, private staging entitlement/access control, charge or rollback. The archive pair has **not been obtained or run** in this 20i Overseer session.
+
+The source should be transferred into a separately approved **private** website repository with named maintainer and exact source commit SHA after original-author readback; do not place theme PHP or potentially private source archive bytes into the public 20i deployment-control repository. Hosting account access, theme install/upload, DNS or billing are not authorized by this check.
+
 ## Custodian ACK / remaining evidence
 
 - 20I_ACK: ACK for **this control-plane claim-matrix reconciliation only**
