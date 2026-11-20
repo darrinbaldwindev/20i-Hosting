@@ -58,7 +58,8 @@ def _read_archive(path: str, expected: tuple[int, str], label: str) -> bytes:
             raise ArchiveBlocked(label + "_NOT_REGULAR_FILE")
         if before_path.st_size > MAX_ZIP_BYTES:
             raise ArchiveBlocked(label + "_TOO_LARGE")
-        flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
+        flags = (os.O_RDONLY | getattr(os, "O_BINARY", 0) |
+                 getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0))
         fd = os.open(path, flags)
     except ArchiveBlocked:
         raise
