@@ -1,0 +1,202 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
+import { existsSync, mkdtempSync, mkdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { auditTheme } from '../tools/validate-agentos-theme-copy.mjs';
+
+const script = fileURLToPath(new URL('../tools/validate-agentos-theme-copy.mjs', import.meta.url));
+function fixture(fn) {
+  const dir = mkdtempSync(join(tmpdir(), '20i-agentos-claims-'));
+  const cleanup = () => rmSync(dir, { recursive: true, force: true });
+  try {
+    for (const name of ['style.css','functions.php','front-page.php','index.php']) {
+      writeFileSync(join(dir,name), name === 'style.css' ? 'Theme Name: Candidate' : '<?php // This is a nonpublic staging draft');
+    }
+    const value = fn(dir);
+    // Keep the scratch directory alive through asynchronous callbacks.
+    if (value && typeof value.then === 'function') return Promise.resolve(value).finally(cleanup);
+    cleanup();
+    return value;
+  } catch (error) {
+    cleanup();
+    throw error;
+  }
+}
+function checked(text, code) {
+  return fixture(dir => {
+    writeFileSync(join(dir, 'front-page.php'), '<?php // staging draft\n' + text + '\n');
+    const output = auditTheme(dir);
+    assert.equal(output.result, 'BLOCKED', JSON.stringify(output));
+    assert.equal(output.publish_authorized, false);
+    assert.equal(output.upload_authorized, false);
+    assert(output.errors.some(x => x.includes(code)), JSON.stringify(output));
+  });
+}
+
+test('no source directory is BLOCKED', () => {
+  assert.equal(auditTheme(null).result, 'BLOCKED');
+});
+test('nonexistent directory is BLOCKED', () => {
+  assert.equal(auditTheme('/path/which/never/existed/agentos-theme').result, 'BLOCKED');
+});
+test('minimal source is scan complete but never accepted or authorized', () => fixture(dir => {
+  const r = auditTheme(dir);
+  assert.equal(r.result, 'COPY_SCAN_COMPLETE_NOT_ACCEPTED', JSON.stringify(r));
+  assert.equal(r.upload_authorized, false);
+  assert.equal(r.publish_authorized, false);
+}));
+test('missing WordPress entry file blocks', () => fixture(dir => {
+  rmSync(join(dir, 'functions.php'));
+  const r = auditTheme(dir);
+  assert.equal(r.result, 'BLOCKED');
+  assert(r.errors.includes('WORDPRESS_THEME_FILE_MISSING:functions.php'));
+}));
+test('obsolete Pro-required monthly add-on claims block', () => checked(
+  'Subscription requires Pro and is an add-on to annual membership.', 'SUPERSEDED_ADDON'
+));
+test('historical Co-worker and Operator pricing blocks', () => checked(
+  'Co-worker $39 and Operator tier are available.', 'SUPERSEDED_TIER'
+));
+test('superseded monetary offer blocks', () => checked(
+  'Pay $49 for the Standard plan.', 'SUPERSEDED_PRICE'
+));
+test('unapproved trial promise blocks', () => checked(
+  'Start your 30-day free trial today.', 'UNAPPROVED_TRIAL'
+));
+test('live/certification product claims block', () => checked(
+  'AgentOS is production-ready and independently certified.', 'UNVERIFIED_LIVE'
+));
+test('approved USD tiers still require copy/tax review before publication', () => checked(
+  'Pro US$99/year, Subscription US$22/month', 'UNAPPROVED_PRICE_PRESENTATION'
+));
+test('active signup and checkout forms block', () => checked(
+  '<form method="POST" action="/signup">', 'ACTIVE_PAYMENT_OR_SIGNUP'
+));
+test('approved project-count information can be drafted without implying release', () => fixture(dir => {
+  writeFileSync(join(dir,'front-page.php'), '<?php // Free has three project slots; Pro has 25, Subscription has 100. In development.');
+  const r = auditTheme(dir);
+  assert.equal(r.result, 'COPY_SCAN_COMPLETE_NOT_ACCEPTED', JSON.stringify(r));
+  assert.equal(r.publish_authorized, false);
+}));
+test('invalid UTF-8 in a template blocks', () => fixture(dir => {
+  writeFileSync(join(dir,'front-page.php'), Buffer.from([0xff,0xff]));
+  const r = auditTheme(dir);
+  assert(r.errors.includes('SOURCE_INVALID_UTF8:front-page.php'));
+  assert.equal(r.result, 'BLOCKED');
+}));
+test('nested symlink source is blocked', { skip: process.platform === 'win32' }, () => fixture(dir => {
+  const nested = join(dir,'assets');
+  mkdirSync(nested);
+  symlinkSync(join(dir,'front-page.php'),join(nested,'symlink.php'));
+  const r=auditTheme(dir);
+  assert.equal(r.result,'BLOCKED');
+  assert(r.errors.includes('SYMLINK_FORBIDDEN:assets/symlink.php'));
+}));
+test('non-source binary assets are not interpreted as marketing copy', () => fixture(dir => {
+  mkdirSync(join(dir,'assets'));
+  writeFileSync(join(dir,'assets','logo.png'),Buffer.from([0xff,0x00]));
+  const r=auditTheme(dir);
+  assert.equal(r.result,'COPY_SCAN_COMPLETE_NOT_ACCEPTED');
+}));
+test('CLI without source exits 2 with structured blocked status', () => {
+  const p=spawnSync(process.execPath,[script],{encoding:'utf8'});
+  assert.equal(p.status,2);
+  const r=JSON.parse(p.stdout);
+  assert.equal(r.result,'BLOCKED');
+  assert.equal(r.upload_authorized,false);
+});
+test('CLI with safe fixture exits 0 yet never authorizes upload', () => fixture(dir => {
+  const p=spawnSync(process.execPath,[script,dir],{encoding:'utf8'});
+  assert.equal(p.status,0,p.stderr+p.stdout);
+  const r=JSON.parse(p.stdout);
+  assert.equal(r.result,'COPY_SCAN_COMPLETE_NOT_ACCEPTED');
+  assert.equal(r.upload_authorized,false);
+  assert.equal(r.publish_authorized,false);
+}));
+
+test('RED: directory-only input cannot bypass the bounded entry limit', () => fixture(dir => {
+  for (let i = 0; i < 260; i++) mkdirSync(join(dir, 'empty-' + i));
+  const r = auditTheme(dir);
+  assert.equal(r.result, 'BLOCKED', JSON.stringify(r));
+  assert(r.errors.includes('SOURCE_ENTRY_LIMIT_EXCEEDED'), JSON.stringify(r));
+  assert.equal(r.upload_authorized, false);
+}));
+test('RED: deeply nested empty directories hit an explicit depth fence', () => fixture(dir => {
+  let nested = dir;
+  for (let i = 0; i < 36; i++) {
+    nested = join(nested, 'd');
+    mkdirSync(nested);
+  }
+  const r = auditTheme(dir);
+  assert.equal(r.result, 'BLOCKED', JSON.stringify(r));
+  assert(r.errors.includes('SOURCE_DEPTH_LIMIT_EXCEEDED'), JSON.stringify(r));
+  assert.equal(r.publish_authorized, false);
+}));
+test('RED: extra CLI argument gives precise usage failure without scanning', () => fixture(dir => {
+  const p = spawnSync(process.execPath, [script, dir, 'unexpected'], {encoding:'utf8'});
+  assert.equal(p.status, 2, p.stdout + p.stderr);
+  const r = JSON.parse(p.stdout);
+  assert.equal(r.result, 'BLOCKED');
+  assert(r.errors.includes('CLI_ARGUMENTS_INVALID'), JSON.stringify(r));
+  assert.match(p.stderr, /usage:/i);
+}));
+test('RED: async fixture retains directory until callback has settled', async () => {
+  await fixture(async dir => {
+    await Promise.resolve();
+    assert(existsSync(dir), 'temporary test files were deleted before async callback resumed');
+    const r = auditTheme(dir);
+    assert.equal(r.result, 'COPY_SCAN_COMPLETE_NOT_ACCEPTED', JSON.stringify(r));
+  });
+});
+test('RED: CSS generated checkout copy is inspected, not silently skipped', () => fixture(dir => {
+  writeFileSync(join(dir, 'style.css'), 'Theme Name: Candidate\n.offer::after { content: "Subscribe now"; }');
+  const r = auditTheme(dir);
+  assert.equal(r.result, 'BLOCKED', JSON.stringify(r));
+  assert(r.errors.some(x => x.includes('COPY_REVIEW_REQUIRED:ACTIVE_PAYMENT_OR_SIGNUP:style.css')), JSON.stringify(r));
+}));
+test('RED: SVG text marketing claims are inspected, not silently skipped', () => fixture(dir => {
+  mkdirSync(join(dir, 'assets'));
+  writeFileSync(join(dir, 'assets', 'hero.svg'), '<svg xmlns="http://www.w3.org/2000/svg"><text>Production-ready</text></svg>');
+  const r = auditTheme(dir);
+  assert.equal(r.result, 'BLOCKED', JSON.stringify(r));
+  assert(r.errors.some(x => x.includes('COPY_REVIEW_REQUIRED:UNVERIFIED_LIVE:assets/hero.svg')), JSON.stringify(r));
+}));
+
+test('RED: ESM source is scanned for live subscription calls to action', () => fixture(dir => {
+  mkdirSync(join(dir, 'assets'));
+  writeFileSync(join(dir, 'assets', 'site.mjs'), 'export const cta = "Subscribe now";');
+  const r = auditTheme(dir);
+  assert.equal(r.result, 'BLOCKED', JSON.stringify(r));
+  assert(r.errors.some(x => x.includes('COPY_REVIEW_REQUIRED:ACTIVE_PAYMENT_OR_SIGNUP:assets/site.mjs')), JSON.stringify(r));
+}));
+test('RED: CommonJS source is scanned for live payment calls to action', () => fixture(dir => {
+  mkdirSync(join(dir, 'assets'));
+  writeFileSync(join(dir, 'assets', 'site.cjs'), 'module.exports = "Pay now";');
+  const r = auditTheme(dir);
+  assert.equal(r.result, 'BLOCKED', JSON.stringify(r));
+  assert(r.errors.some(x => x.includes('COPY_REVIEW_REQUIRED:ACTIVE_PAYMENT_OR_SIGNUP:assets/site.cjs')), JSON.stringify(r));
+}));
+test('RED: alternative PHP template extension cannot hide live assertions', () => fixture(dir => {
+  writeFileSync(join(dir, 'promotional.phtml'), '<?php echo "Production-ready";');
+  const r = auditTheme(dir);
+  assert.equal(r.result, 'BLOCKED', JSON.stringify(r));
+  assert(r.errors.some(x => x.includes('COPY_REVIEW_REQUIRED:UNVERIFIED_LIVE:promotional.phtml')), JSON.stringify(r));
+}));
+test('RED: PHP include file cannot hide trial promises', () => fixture(dir => {
+  writeFileSync(join(dir, 'promotional.inc'), '<?php echo "Free trial included";');
+  const r = auditTheme(dir);
+  assert.equal(r.result, 'BLOCKED', JSON.stringify(r));
+  assert(r.errors.some(x => x.includes('COPY_REVIEW_REQUIRED:UNAPPROVED_TRIAL:promotional.inc')), JSON.stringify(r));
+}));
+test('RED: thousands of repeated claims produce bounded diagnostics and explicit truncation', () => fixture(dir => {
+  writeFileSync(join(dir, 'front-page.php'), '<?php // fixture\n' + 'Buy now\n'.repeat(2000));
+  const r = auditTheme(dir);
+  assert.equal(r.result, 'BLOCKED', JSON.stringify(r).slice(0, 500));
+  assert(r.errors.length <= 101, 'unbounded errors: ' + r.errors.length);
+  assert(r.errors.includes('DIAGNOSTICS_TRUNCATED'), JSON.stringify(r).slice(0, 500));
+  assert.equal(r.upload_authorized, false);
+  assert.equal(r.publish_authorized, false);
+}));
