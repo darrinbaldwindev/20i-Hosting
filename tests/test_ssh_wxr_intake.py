@@ -64,6 +64,20 @@ class Intake(unittest.TestCase):
             with self.subTest(slug=slug):
                 self.reject(self.changed(WP+"post_name", slug), "SLUG_FORBIDDEN")
 
+    def test_bare_product_slug_is_rejected(self):
+        self.reject(self.changed(WP+"post_name", "internal-ssh-product"), "SLUG_FORBIDDEN")
+
+    def test_reserved_research_route_descendants(self):
+        for slug in ("internal-ssh-catalogue-preview", "internal-ssh-compare-research",
+                     "internal-ssh-deals-preview"):
+            with self.subTest(slug=slug):
+                self.reject(self.changed(WP+"post_name", slug), "SLUG_FORBIDDEN")
+
+    def test_editorial_productivity_slug_is_allowed(self):
+        result = check(self.changed(WP+"post_name", "internal-ssh-productivity-guide"))
+        self.assertEqual(result["result"], "STRUCTURAL_CHECK_ONLY_NOT_AUTHORIZED")
+        self.assertFalse(result["upload_authorized"])
+
     def test_duplicate_field(self):
         root = fixture()
         ET.SubElement(root.find("./channel/item"), WP+"status").text = "draft"
