@@ -5,7 +5,7 @@ import { createHash } from 'node:crypto';
 import { mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const cli = fileURLToPath(new URL('../tools/validate-admission.mjs', import.meta.url));
 const payload = Buffer.from('20i offline CLI regression fixture');
@@ -334,3 +334,73 @@ test('truncated UTF-8 sequence inside evidence is blocked without replacement', 
     assert(out.errors.includes('INPUT_UNREADABLE_OR_INVALID:MANIFEST_INVALID_UTF8'));
   })
 );
+
+for (const [name, transform] of [
+  ['literal root key', raw => raw.replace('"target_environment":"staging"', '"target_environment":"production","target_environment":"staging"')],
+  ['nested evidence state', raw => raw.replace('"state":"PASS"', '"state":"FAIL","state":"PASS"')],
+  ['escaped equivalent root key', raw => raw.replace('"target_environment":"staging"', '"target_environment":"production","target_\\u0065nvironment":"staging"')]
+]) {
+  test('duplicate manifest ' + name + ' fails closed', () => inScratch(({ manifestPath, artifactPath }) => {
+    const original = JSON.stringify(manifest());
+    const ambiguous = transform(original);
+    assert.notEqual(ambiguous, original);
+    assert.deepEqual(JSON.parse(ambiguous), JSON.parse(original));
+    writeFileSync(manifestPath, ambiguous);
+    const proc = runCli(manifestPath, artifactPath);
+    const out = JSON.parse(proc.stdout);
+    assert.equal(proc.status, 2, proc.stdout + proc.stderr);
+    assert.equal(out.result, 'BLOCKED');
+    assert.equal(out.upload_authorized, false);
+    assert.deepEqual(out.errors, ['INPUT_UNREADABLE_OR_INVALID:MANIFEST_DUPLICATE_JSON_KEY']);
+  }));
+}
+
+test('distinct objects may repeat keys and escaped strings remain valid', () =>
+  inScratch(({ manifestPath, artifactPath }) => {
+    const m = manifest();
+    m.site = 'fixture with "state": "PASS", brackets {} and slash \\';
+    writeFileSync(manifestPath, JSON.stringify(m));
+    const proc = runCli(manifestPath, artifactPath);
+    assert.equal(proc.status, 0, proc.stdout + proc.stderr);
+    assert.equal(JSON.parse(proc.stdout).upload_authorized, false);
+  })
+);
+
+for (const kind of ['MANIFEST', 'ARTIFACT']) {
+  test('deterministic regular file substitution before open: ' + kind, () =>
+    inScratch(({ dir, manifestPath, artifactPath }) => {
+      const target = kind === 'MANIFEST' ? manifestPath : artifactPath;
+      const alternate = join(dir, 'alternate');
+      const displaced = join(dir, 'displaced');
+      writeFileSync(alternate, kind === 'MANIFEST' ? JSON.stringify(manifest()) : payload);
+      const preload = join(dir, 'preload.mjs');
+      writeFileSync(preload, [
+        "import fs from 'node:fs';",
+        "import { syncBuiltinESMExports } from 'node:module';",
+        'const target = ' + JSON.stringify(target) + ';',
+        'const alternate = ' + JSON.stringify(alternate) + ';',
+        'const displaced = ' + JSON.stringify(displaced) + ';',
+        'const original = fs.openSync;',
+        'let replaced = false;',
+        'fs.openSync = function(path, ...args) {',
+        '  if (!replaced && path === target) {',
+        '    replaced = true;',
+        '    fs.renameSync(target, displaced);',
+        '    fs.renameSync(alternate, target);',
+        '  }',
+        '  return original.call(this, path, ...args);',
+        '};',
+        'syncBuiltinESMExports();'
+      ].join('\n'));
+      const proc = spawnSync(process.execPath, ['--import', pathToFileURL(preload).href, cli, manifestPath, artifactPath], {
+        encoding: 'utf8', timeout: 15000, maxBuffer: 1024 * 1024
+      });
+      assert.equal(proc.error, undefined, String(proc.error));
+      assert.equal(proc.status, 2, proc.stdout + proc.stderr);
+      const out = JSON.parse(proc.stdout);
+      assert.equal(out.result, 'BLOCKED');
+      assert.equal(out.upload_authorized, false);
+      assert.deepEqual(out.errors, ['INPUT_UNREADABLE_OR_INVALID:' + kind + '_IDENTITY_CHANGED']);
+    })
+  );
+}
