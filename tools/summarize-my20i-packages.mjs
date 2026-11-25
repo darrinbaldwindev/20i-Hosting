@@ -130,13 +130,15 @@ export function readLocalExport(filename) {
   if (typeof filename !== 'string' || !filename) return blocked('INPUT_PATH_REQUIRED');
   let descriptor;
   try {
-    const pathInfo = lstatSync(filename);
+    const pathInfo = lstatSync(filename, {bigint: true});
     if (!pathInfo.isFile()) return blocked('INPUT_NOT_REGULAR_FILE');
     if (pathInfo.size > MAX_INPUT_BYTES) return blocked('INPUT_TOO_LARGE');
     descriptor = openSync(filename, constants.O_RDONLY |
       (constants.O_NOFOLLOW ?? 0) | (constants.O_NONBLOCK ?? 0));
-    const before = fstatSync(descriptor);
-    if (!before.isFile() || before.dev !== pathInfo.dev || before.ino !== pathInfo.ino) {
+    const before = fstatSync(descriptor, {bigint: true});
+    if (!before.isFile() || before.dev !== pathInfo.dev || before.ino !== pathInfo.ino ||
+        before.size !== pathInfo.size || before.mtimeNs !== pathInfo.mtimeNs ||
+        before.ctimeNs !== pathInfo.ctimeNs) {
       return blocked('INPUT_CHANGED_DURING_OPEN');
     }
     if (before.size > MAX_INPUT_BYTES) return blocked('INPUT_TOO_LARGE');
@@ -147,10 +149,13 @@ export function readLocalExport(filename) {
       if (count > MAX_INPUT_BYTES) return blocked('INPUT_TOO_LARGE');
       chunks.push(Buffer.from(buffer.subarray(0, n)));
     }
-    const after = fstatSync(descriptor), pathAfter = lstatSync(filename);
-    if (count !== before.size || before.size !== after.size ||
-        before.mtimeMs !== after.mtimeMs || before.ctimeMs !== after.ctimeMs ||
-        !pathAfter.isFile() || pathAfter.dev !== after.dev || pathAfter.ino !== after.ino) {
+    const after = fstatSync(descriptor, {bigint: true}), pathAfter = lstatSync(filename, {bigint: true});
+    if (BigInt(count) !== before.size || before.size !== after.size ||
+        before.dev !== after.dev || before.ino !== after.ino ||
+        before.mtimeNs !== after.mtimeNs || before.ctimeNs !== after.ctimeNs ||
+        !pathAfter.isFile() || pathAfter.dev !== after.dev || pathAfter.ino !== after.ino ||
+        pathAfter.size !== after.size || pathAfter.mtimeNs !== after.mtimeNs ||
+        pathAfter.ctimeNs !== after.ctimeNs) {
       return blocked('INPUT_CHANGED_DURING_READ');
     }
     let source;
