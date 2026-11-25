@@ -105,9 +105,11 @@ def assess(data, expected_sha256, expected_pages, expected_posts):
             require(not item.attrib and all(x.tag in allowed for x in item), "ITEM_FIELD_FORBIDDEN")
             require(bool(field(item, "title").strip()), "TITLE_EMPTY")
             slug = field(item, WP + "post_name")
-            require(SLUG.fullmatch(slug) and not slug.startswith("internal-ssh-product-") and
-                    slug not in {"internal-ssh-catalogue", "internal-ssh-compare", "internal-ssh-deals"},
-                    "SLUG_FORBIDDEN")
+            reserved = ("internal-ssh-product", "internal-ssh-catalogue",
+                        "internal-ssh-compare", "internal-ssh-deals")
+            require(SLUG.fullmatch(slug) and not any(
+                slug == root or slug.startswith(root + "-") for root in reserved),
+                "SLUG_FORBIDDEN")
             identity = field(item, WP + "post_id")
             require(re.fullmatch(r"[1-9][0-9]{0,9}", identity), "POST_ID_INVALID")
             require(slug not in slugs and identity not in ids, "DUPLICATE_ITEM")
