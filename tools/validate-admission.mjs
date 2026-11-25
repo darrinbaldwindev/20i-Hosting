@@ -122,19 +122,33 @@ function inputError(code) {
   return error;
 }
 
+function sameIdentity(a, b) {
+  return a.dev === b.dev && a.ino === b.ino;
+}
+
 function withRegularInput(filename, kind, consume) {
-  if (!lstatSync(filename).isFile()) throw inputError(kind + '_NOT_REGULAR_FILE');
+  const pathBefore = lstatSync(filename, { bigint: true });
+  if (!pathBefore.isFile()) throw inputError(kind + '_NOT_REGULAR_FILE');
   const flags = constants.O_RDONLY | (constants.O_NOFOLLOW ?? 0) |
     (constants.O_NONBLOCK ?? 0);
   let fd;
   try {
     fd = openSync(filename, flags);
-    const before = fstatSync(fd);
+    const before = fstatSync(fd, { bigint: true });
     if (!before.isFile()) throw inputError(kind + '_NOT_REGULAR_FILE');
+    if (!sameIdentity(pathBefore, before)) throw inputError(kind + '_IDENTITY_CHANGED');
+    if (pathBefore.size !== before.size || pathBefore.mtimeNs !== before.mtimeNs ||
+        pathBefore.ctimeNs !== before.ctimeNs) throw inputError(kind + '_CHANGED_DURING_READ');
     const output = consume(fd, before.size);
-    const after = fstatSync(fd);
-    if (before.size !== after.size || before.mtimeMs !== after.mtimeMs ||
-        before.ctimeMs !== after.ctimeMs) {
+    const after = fstatSync(fd, { bigint: true });
+    let pathAfter;
+    try { pathAfter = lstatSync(filename, { bigint: true }); }
+    catch { throw inputError(kind + '_IDENTITY_CHANGED'); }
+    if (!pathAfter.isFile() || !sameIdentity(before, after) ||
+        !sameIdentity(after, pathAfter)) throw inputError(kind + '_IDENTITY_CHANGED');
+    if (before.size !== after.size || before.mtimeNs !== after.mtimeNs ||
+        before.ctimeNs !== after.ctimeNs || after.size !== pathAfter.size ||
+        after.mtimeNs !== pathAfter.mtimeNs || after.ctimeNs !== pathAfter.ctimeNs) {
       throw inputError(kind + '_CHANGED_DURING_READ');
     }
     return output;
@@ -155,7 +169,7 @@ function readBoundedManifest(filename) {
       if (total > MAX_MANIFEST_BYTES) throw inputError('MANIFEST_TOO_LARGE');
       chunks.push(Buffer.from(chunk.subarray(0, bytesRead)));
     }
-    if (total !== expectedSize) throw inputError('MANIFEST_CHANGED_DURING_READ');
+    if (BigInt(total) !== expectedSize) throw inputError('MANIFEST_CHANGED_DURING_READ');
     // Buffer.toString('utf8') silently inserts replacement characters for
     // invalid bytes. Fail closed rather than accepting rewritten evidence.
     try {
@@ -170,15 +184,47 @@ function hashRegularArtifact(filename) {
   return withRegularInput(filename, 'ARTIFACT', (fd, expectedSize) => {
     const hash = createHash('sha256');
     const chunk = Buffer.alloc(READ_CHUNK_BYTES);
-    let total = 0;
+    let total = 0n;
     let bytesRead;
     while ((bytesRead = readSync(fd, chunk, 0, chunk.length, null)) > 0) {
-      total += bytesRead;
+      total += BigInt(bytesRead);
       hash.update(chunk.subarray(0, bytesRead));
     }
     if (total !== expectedSize) throw inputError('ARTIFACT_CHANGED_DURING_READ');
     return hash.digest('hex');
   });
+}
+
+// JSON.parse validates syntax but discards duplicate property names. Reject
+// ambiguity at every nesting level, comparing decoded key spellings.
+function hasDuplicateJsonObjectKeys(source) {
+  const stack = [];
+  for (let i = 0; i < source.length;) {
+    const ch = source[i];
+    if (ch === '{') { stack.push(new Set()); i++; continue; }
+    if (ch === '[') { stack.push(null); i++; continue; }
+    if (ch === '}' || ch === ']') { stack.pop(); i++; continue; }
+    if (ch !== '"') { i++; continue; }
+
+    const start = i;
+    i++;
+    while (i < source.length) {
+      if (source[i] === '\\') { i += 2; continue; }
+      if (source[i] === '"') break;
+      i++;
+    }
+    const end = i;
+    i++;
+    let next = i;
+    while (next < source.length && /\s/.test(source[next])) next++;
+    const current = stack[stack.length - 1];
+    if (source[next] !== ':' || !(current instanceof Set)) continue;
+    // Decode JSON escapes before comparing names, e.g. "id" and "\u0069d".
+    const key = JSON.parse(source.slice(start, end + 1));
+    if (current.has(key)) return true;
+    current.add(key);
+  }
+  return false;
 }
 
 function main() {
@@ -188,7 +234,9 @@ function main() {
     return;
   }
   try {
-    const manifest = JSON.parse(readBoundedManifest(process.argv[2]));
+    const source = readBoundedManifest(process.argv[2]);
+    const manifest = JSON.parse(source);
+    if (hasDuplicateJsonObjectKeys(source)) throw inputError('MANIFEST_DUPLICATE_JSON_KEY');
     const artifactDigest = hashRegularArtifact(process.argv[3]);
     const output = assessObservedDigest(manifest, artifactDigest);
     console.log(JSON.stringify(output, null, 2));
