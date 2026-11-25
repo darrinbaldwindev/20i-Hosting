@@ -4,7 +4,7 @@ import { spawnSync } from 'node:child_process';
 import { mkdtempSync, rmSync, writeFileSync, symlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { readLocalExport, summarizePackageExport } from '../tools/summarize-my20i-packages.mjs';
 
 const SCRIPT = fileURLToPath(new URL('../tools/summarize-my20i-packages.mjs', import.meta.url));
@@ -172,3 +172,36 @@ test('the same property name in distinct package objects is valid', () => temp(f
   assert.equal(result.result, 'LOCAL_PACKAGE_SUMMARY_NOT_PROVIDER_VERIFIED', JSON.stringify(result));
   assert.equal(result.package_count,2);
 }));
+
+for (const stage of ['before-open', 'final-path-check']) {
+  test('same-inode export modification at ' + stage + ' fails closed', () => temp((file, dir) => {
+    writeFileSync(file, JSON.stringify([row()]));
+    const preload = join(dir, 'preload.mjs');
+    writeFileSync(preload, [
+      "import fs from 'node:fs';",
+      "import { syncBuiltinESMExports } from 'node:module';",
+      'const target = ' + JSON.stringify(file) + ';',
+      'const stage = ' + JSON.stringify(stage) + ';',
+      'const open = fs.openSync, stat = fs.lstatSync;',
+      'let opens = 0, stats = 0;',
+      'fs.openSync = function(path, ...args) {',
+      "  if (path === target && ++opens === 1 && stage === 'before-open') fs.appendFileSync(target, ' ');",
+      '  return open.call(this, path, ...args);',
+      '};',
+      'fs.lstatSync = function(path, ...args) {',
+      "  if (path === target && ++stats === 2 && stage === 'final-path-check') fs.appendFileSync(target, ' ');",
+      '  return stat.call(this, path, ...args);',
+      '};',
+      'syncBuiltinESMExports();'
+    ].join('\n'));
+    const p = spawnSync(process.execPath, ['--import', pathToFileURL(preload).href, SCRIPT, file], {
+      encoding: 'utf8', timeout: 15000, maxBuffer: 1024 * 1024
+    });
+    assert.equal(p.error, undefined, String(p.error));
+    assert.equal(p.status, 2, p.stdout + p.stderr);
+    const result = JSON.parse(p.stdout);
+    expectBlocked(result, stage === 'before-open' ? 'INPUT_CHANGED_DURING_OPEN' : 'INPUT_CHANGED_DURING_READ');
+    assertRedacted(result);
+    assert(!p.stdout.includes(file));
+  }));
+}
